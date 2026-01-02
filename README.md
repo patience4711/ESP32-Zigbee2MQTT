@@ -9,7 +9,7 @@ The harware is a
  - an usb power supply
 <br>
 The ESP32 is connected to your wifi network using the captive portal.<br>
-# Join a device
+## Join a device
 <br>If we have a device that we want to use, we have to add the device to the system via the webui.
 When added the new device, we can join it. In the webui we click "join" and now the system awaits a message from the device for a certain time.
 We put the device in pairing mode, usually just reset the device'. Now its led is flashing. When it sent the message, the system
