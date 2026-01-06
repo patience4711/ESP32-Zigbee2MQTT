@@ -1,0 +1,205 @@
+// these are operations that are triggered within an async webserver request. 
+// a crash or wdt reset can happen otherwise
+
+void test_actionFlag() {
+    if(actionFlag == 0) return;
+    
+    consoleOut("testing actionFlag = " + String(actionFlag));
+    
+    //if(actionFlag != 0) Serial.println("test_actionFlag 1 val = " + String(actionFlag));  
+    // ******************  reset the nework data and reboot in AP *************************
+    if (actionFlag == 11 || value == 11) 
+    { // 
+     //DebugPrintln("erasing the wifi credentials, value = " + String(value) + "  actionFlag = " + String(actionFlag));
+     delay(1000); //reserve time to release the button
+     //eraseWifiFlash();
+     WiFi.disconnect();
+//    WiFi.end();
+     // we write a flag in EEPROM
+     consoleOut(F("wifi disconnected"));
+//we try to overwrite the wifi creentials     
+     const char* ssid = "dummy";
+    const char* password = "dummy";
+    WiFi.begin(ssid, password);
+    Serial.println(F("\nConnecting to dummy network"));
+    int teller = 0;
+      while(WiFi.status() != WL_CONNECTED){
+          Serial.print(F("wipe wifi credentials\n"));
+          delay(100);         
+          teller ++;
+          if (teller > 2) break;
+      }
+     ESP.restart();
+    }  
+
+    if (actionFlag == 10) { // the button was pressed a long time, start ap
+     delay(2000); // give the server the time to send the confirm
+     consoleOut("rebooting");
+     String key = "req";
+     prefs.putString(key.c_str(), requestUrl);
+     ESP.restart();
+  }
+    
+if (actionFlag >= 20 && actionFlag < 30) 
+        { //triggered by devicedel
+          
+          int devNr = actionFlag - 20; 
+          Serial.println("device to delete = " + String(devNr));
+          deviceDelete(devNr);
+          diagNose = 1;  // rest goes to the console
+          //send the commands to interview device
+          actionFlag = 0; //reset the actionflag
+        }
+
+if (actionFlag == 35) { //triggered by the api (external)
+        actionFlag = 0; //reset the actionflag
+        if(diagNose == 10) diagNose = 3;
+        consoleOut("TEST actionFlag = 45 ");
+        cont_read(); // 
+        if(diagNose == 3) diagNose = 1;
+    }
+    if (actionFlag == 44) { //triggered by the webpage zbtest
+        actionFlag = 0; //reset the actionflag
+        healthCheck(); 
+    }
+    if (actionFlag == 45) { //triggered by the api (external)
+        actionFlag = 0; //reset the actionflag
+        if(diagNose == 10) diagNose = 3;
+        consoleOut("TEST actionFlag = 45 ");
+        testMessage(); // the bool decides where to find the input
+        if(diagNose == 3) diagNose = 1;
+    }
+    // if (actionFlag == 43) { //triggered by the api (external)
+    //     actionFlag = 0; //reset the actionflag
+    //     if(diagNose == 10) diagNose = 3;
+    //     consoleOut("\nTEST actionFlag = 43 ");
+    //     rawMessage(); // the bool decides where to find the input
+    //     if(diagNose == 3) diagNose = 1;
+    // }
+    if (actionFlag == 46) { //triggered by the webpage zbtest
+        actionFlag = 0; //reset the actionflag
+        showDir(); 
+    }
+    
+       if (actionFlag == 47) { //triggered by the api (external)
+        actionFlag = 0; //reset the actionflag
+        if(diagNose == 10) diagNose = 3;
+        //consoleOut("TEST actionFlag = 47 ");
+        startCoordinator(); // t
+        if(diagNose == 3) diagNose = 1;
+    }
+
+    //    if (actionFlag == 55) { //triggered by bulb on to test tke bulb
+    //    actionFlag = 0;
+    //     consoleOut("bulbColorTemp(2, 1)");
+    //     bulbColorTemp(2, 1);
+    //     delay(2000);
+    //     consoleOut("bulbColorTemp(2, 2)");
+    //     bulbColorTemp(2, 2);
+    //     delay(2000);
+    //     consoleOut("bulbColorTemp(2, 3)");
+    //     bulbColorTemp(2, 3);
+    //     delay(2000);
+    //     consoleOut("bulbSetHue(2, 00, 1) red"); //red
+    //     bulbSetHue(2, 00, 0);  // red
+    //     delay(2000) ;
+    //     consoleOut("bulbSetHue(2, 85, 1) green"); // green
+    //     bulbSetHue(2, 135, 0);
+    //     delay(2000);
+    //     consoleOut("bulbSetHue(2, 170, 10) blue"); // blue
+    //     bulbSetHue(2, 700, 10);
+    //     delay(2000);
+    //     consoleOut("bulbSetSat(2, 10, 5)");
+    //     bulbSetSat(2, 10, 5 );
+    //     delay(2000);
+    //     consoleOut("bulbSetSat(2, 90, 3)");
+    //     bulbSetSat(2, 90, 3);
+    //     delay(2000);
+        
+    //     bulbOnOff(2,false);              
+    // }
+
+       //if (actionFlag == 48) { //triggered by the api (external)
+       // actionFlag = 0; //reset the actionflag
+       //if(diagNose == 10) diagNose = 3;
+        //consoleOut("TEST actionFlag = 47 ");
+        //joinDevice(); // t
+        //if(diagNose == 3) diagNose = 1;
+        //}
+       
+    
+        if (actionFlag == 60) {
+            actionFlag = 0; //reset the actionflag
+            joinOnActionflag();
+        }
+    
+       if (actionFlag >= 80 && actionFlag < 90) 
+        { //triggered by the api (external)
+          char mes[50]={"\0"};
+          int devNr = actionFlag - 80; 
+          if(diagNose == 10) diagNose = 3;  // write to the logfile
+          // register for ZDO messages for cluster 8002
+          strcpy(mes, "253E0280");
+          sendZB(mes);
+          decodeGeneralAnswer();
+          // register an endpoint
+          strcpy(mes, "2400010401000000000000");
+          sendZB(mes);
+          decodeGeneralAnswer();
+          sprintf(mes, "2502%s%s", Dev_Prop[devNr].devAdr, Dev_Prop[devNr].devAdr);
+          sendZB(mes);
+          decodeGeneralAnswer();
+          diagNose = 1;  // rest goes to the console
+          //send the commands to interview device
+          actionFlag = 0; //reset the actionflag
+        }
+
+       if (actionFlag >= 70 && actionFlag < 80) 
+        { //triggered by the api (external)
+          char mes[50]={"\0"};
+          int devNr = actionFlag - 70; 
+          diagNose = 1;  // write to the console
+          if(Dev_Prop[devNr].devType == 1 || Dev_Prop[devNr].devType == 2) 
+          {  interviewFlag = devNr; // this waits untill device is awake
+             consoleOut("set interviewFlag =  " + String(devNr));
+             actionFlag = 0; 
+             return;
+          }
+          interviewDevice(devNr);
+          diagNose = 1;  // rest goes to the console
+          //send the commands to interview device
+          actionFlag = 0; //reset the actionflag
+        }
+
+
+
+// mosquitto test, drop connection, reconnect and sens testmessage
+    if (actionFlag == 49) 
+    { //triggered by console testmqtt
+        actionFlag = 0; //reset the actionflag
+        ledblink(1,100);
+        // always first drop the existing connection
+        if(diagNose == 10) diagNose = 3;
+        MQTT_Client.disconnect();
+        consoleOut("mqtt forced drop connection");
+        delay(100);
+        char Mqtt_send[26] = {0};
+       
+        if(mqttConnect() ) {
+            String toMQTT=""; // if we are connected we do this
+            strcpy( Mqtt_send , Mqtt_outTopic);
+        
+            //if(Mqtt_send[strlen(Mqtt_send -1)] == '/') strcat(Mqtt_send, String(Inv_Prop[0].invIdx).c_str());
+            toMQTT = "{\"test\":\"" + String(Mqtt_send) + "\"}";
+          
+             if( MQTT_Client.publish (Mqtt_outTopic, toMQTT.c_str() ) ) {
+                  consoleOut("sent mqtt message : " + toMQTT);
+             } else {
+                  consoleOut("sending mqtt message failed : " + toMQTT);    
+             }
+        } 
+     // the not connected message is displayed by mqttConnect()
+    }
+
+
+} // end test actionflag
