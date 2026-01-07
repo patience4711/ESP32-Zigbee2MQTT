@@ -16,7 +16,7 @@ firmware for [the cc2530](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob
 firmware for [the cc2531](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob/main/CC2531ZNP-Prod.bin)<br>
 2026-01-06 download [ESP32-Zigbee2Mqtt_v1_4](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob/main/ESP32_ECU_v1_4.bin)<br>
 
-## simple harware: 
+## simple hardware: 
  - An ESP32<br>
  - A CC2530 zigbeemodule<br>
  - A usb power supply<br>
@@ -31,7 +31,6 @@ firmware for [the cc2531](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob
 
 Below an example of the webui to control a smart bulb. This works very good.<br>
 ![ESP32-Zigbee2Mqtt-bulbs](https://github.com/user-attachments/assets/83acdabb-9065-4b9d-ba8a-c8fb06770a4d)
-
 
 ## global working
 The coordinator starts a zigbee network. Within the network, the coordinator can read and send messages to the devices, provided that they are joined. The incoming messages are state and readings data, eg temperature of a sensor.
