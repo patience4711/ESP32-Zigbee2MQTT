@@ -24,9 +24,8 @@ function helpFunction() {
     </select>
   <tr><td >address<td><input class='inp6' name='mqtAdres' value='{mqttAdres}' size='31' placeholder='broker adres'></tr>
   <tr><td >port<td><input class='inp2' name='mqtPort' value='{mqttPort}' size='31' placeholder='mqtt port'></tr>
-  <tr><td>state idx:&nbsp<td><input class='inp2' name='mqidx' value='{idx}' size='4' length='4'></tr>
-  <tr><td>outtopic:&nbsp<td><input class='inp6' name='mqtoutTopic' value='{mqttoutTopic}' placeholder='transmit topic' length='60'></tr>
-  <tr><td>intopic:&nbsp<td><input class='inp6' name='mqtinTopic' value='{mqttinTopic}' readonly placeholder='receive topic' length='60'></tr>
+  <tr><td>outtopic:&nbsp<td><input class='inp6' name='mqtoutTopic' value='{mqtout}' placeholder='transmit topic' length='60'></tr>
+  <tr><td>intopic:&nbsp<td><input class='inp6' name='mqtinTopic' value='{mqtin}' placeholder='receive topic' length='60'></tr>
   <tr><td>username:&nbsp<td><input class='inp6' name='mqtUser' value='{mqtu}'></td></tr>
   <tr><td>password:&nbsp<td><input class='inp6' name='mqtPas' value='{mqtp}'></td></tr>
   <tr><td>client id:&nbsp<td><input class='inp6' name='mqtCi' value='{mqtc}' readonly></td></tr>
@@ -48,17 +47,14 @@ webPage = FPSTR(HTML_HEAD);
 webPage += FPSTR(MQTTCONFIG);  
 
   //altijd de mqtt gegevens terugzetten
- String Mqtt_inTopic=getChipId(false) + "/in";
+ //String Mqtt_inTopic=getChipId(false) + "/in";
 webPage.replace("{mqttAdres}",    String(Mqtt_Broker)   );
 webPage.replace("{mqttPort}",     String(Mqtt_Port)     );
-//webPage.replace("{mqttinTopic}",  String(Mqtt_inTopic)  );
-webPage.replace("{mqttoutTopic}", String(Mqtt_outTopic) );
-webPage.replace("{mqttinTopic}", String(Mqtt_inTopic) );
+webPage.replace("{mqtout}",       String(Mqtt_outTopic) );
+webPage.replace("{mqtin}",        String(Mqtt_inTopic) );
 webPage.replace("{mqtu}",         String(Mqtt_Username) );
 webPage.replace("{mqtp}",         String(Mqtt_Password) );
-webPage.replace("{idx}"          , String(Mqtt_stateIDX) ); 
 
-//String Mqtt_Clientid = getChipid(false);
 webPage.replace("{mqtc}"         , getChipId(false));
 switch (Mqtt_Format) {
  case 0:
@@ -84,19 +80,4 @@ switch (Mqtt_Format) {
     webPage="";
 }
 
-//void handleMQTTconfig(AsyncWebServerRequest *request) {
-//  //collect serverarguments
-//  strcpy( Mqtt_Broker  , request->getParam("mqtAdres")   ->value().c_str() );
-//  strcpy( Mqtt_Port    , request->getParam("mqtPort")    ->value().c_str() );
-//  strcpy( Mqtt_outTopic, request->getParam("mqtoutTopic")->value().c_str() );
-//  strcpy( Mqtt_Username, request->getParam("mqtUser")    ->value().c_str() );
-//  strcpy( Mqtt_Password, request->getParam("mqtPas")     ->value().c_str() );
-//  strcpy( Mqtt_Clientid, request->getParam("mqtCi")     ->value().c_str() );  
-//  Mqtt_stateIDX = request->arg("mqidx").toInt(); //values are 0 1 2
-//  Mqtt_Format = request->arg("fm").toInt(); //values are 0 1 2 3 4 5
-//
-//  //DebugPrintln("saved mqttconfig");
-//  mqttConfigsave();  // 
-//  actionFlag=24; // reconnect with these settings
-//  
-//}
+

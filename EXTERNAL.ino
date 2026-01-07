@@ -102,7 +102,7 @@ void handleNotFound(AsyncWebServerRequest *request)
           int hue = request->arg("hue").toInt();
           int trans = request->arg("trans").toInt();
           // make sure the bulb is on
-          bulbOnOff(dev, true);
+          bulbOnOff(dev, true, true);
           bulbSetHue(dev, hue, trans);
           String term="bulb " + String(dev) + " set to hue " + String(hue); 
           request->send ( 200, "text/html", term );
@@ -116,7 +116,7 @@ void handleNotFound(AsyncWebServerRequest *request)
           int sat = request->arg("sat").toInt();
           int trans = request->arg("trans").toInt();
                     // make sure the bulb is on
-          bulbOnOff(dev, true);
+          bulbOnOff(dev, true, true);
           bulbSetSat(dev, sat, trans);
           String term="bulb " + String(dev) + " set to saturation " + String(sat); 
           request->send ( 200, "text/html", term );
@@ -129,7 +129,7 @@ void handleNotFound(AsyncWebServerRequest *request)
           int dev = request->arg("dev").toInt();
           int state = request->arg("state").toInt();
           //int trans = request->arg("trans").toInt();
-          if (state == 1) bulbOnOff(dev, true); else bulbOnOff(dev, false);
+          if (state == 1) bulbOnOff(dev, true, true); else bulbOnOff(dev, false, true);
           //bulbSetSat(dev, hue, trans);
           String term="bulb " + String(dev) + "on = " + String(state); 
           request->send ( 200, "text/html", term );

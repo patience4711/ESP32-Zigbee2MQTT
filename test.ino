@@ -117,7 +117,7 @@
 // we can send a zigbee message via the API
 void testMessage() 
 {
-      uartBusy = true;
+      
       consoleOut("running testMessage");
       char sendCmd[100]={0};
      
@@ -130,9 +130,8 @@ void testMessage()
        sendZB(txBuffer);
        // find the answer
        
-      readZBbuffer();
+      processAll();
 
-      decodeGeneralAnswer();
       delayMicroseconds(250);
        
        // cleanup

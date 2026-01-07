@@ -42,8 +42,8 @@ sunMoon  sm;
        } else { 
            dst = 0; 
            }
-   switchonTime = sunrise + pollOffset*60; // was -900
-   switchoffTime = sunset - pollOffset*60; // was +900
+  // switchonTime = sunrise + pollOffset*60; // was -900
+  // switchoffTime = sunset - pollOffset*60; // was +900
  
  }
 

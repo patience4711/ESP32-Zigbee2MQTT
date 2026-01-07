@@ -37,18 +37,15 @@ const char SWITCH_PAGE[] PROGMEM = R"=====(
 </div>
 <div id='msect'>
 <br>
-<kop><span id="NAME">HAIPS</span></kop>
+<kop>ESP32-Z2M SWITCH <span id="NAME"></span></kop>
 <br></div>
 <div id='msect'>
   <div class='divstijl' id = 'maindiv' style='height:74vh; background: grey;'>
   <center> <br><span id='pwdby'style='font-size:11px; margin:auto; display:table; color:white;'>powered by Hansiart</span>
 <br>
-
-<tr><td><button id="bt0" class="bt" onclick="buttonFunction(11)"> </button>
-
+<button id="bt0" class="bt" onclick="buttonFunction(11)"> </button>
 <br>
-
-</div><br><br>
+</div><br>
 </div></body>
 
 <script>
@@ -83,7 +80,9 @@ function getData() {
     {
       var antwoord = this.responseText;
       var obj = JSON.parse(antwoord);
-      var onoff = obj.onoff;     
+      var onoff = obj.onoff;
+      var devnr = obj.devnr;     
+      document.getElementById("NAME").textContent = devnr;
       if (onoff == 0) {
       document.getElementById("bt0").style.background="#b9b9c1";
       document.getElementById("maindiv").style.background="grey";
@@ -128,17 +127,13 @@ if (!!window.EventSource) {
 )=====";
 
 
-void switchSetOnOff(int devNr, bool onoff) 
+void switchSetOnOff(int devNr, bool onoff, bool mosQ) 
 {
     char command[50];
-    //char adRev[5]={0};
-    //char ad[5] = {0};
-    //strcpy(ad, Dev_Prop[devNr].devAdr);
-    //adRev[0] = ad[2];
-    //adRev[1] = ad[3];
-    //adRev[2] = ad[0];
-    //adRev[3] = ad[1];
-    //adRev[4] = '\0';
+    char toMQTT[100];
+     
+                // mqttConnect() checks first if we are connected, if not we connect anyway
+
     //working on command  2401CB06010106000401000E03010100
     //off                 2401CB06010106000401000E03010000
     //uint16_t id; // = Dev_Prop[devNr].devAdr;
@@ -151,5 +146,12 @@ void switchSetOnOff(int devNr, bool onoff)
     if(onoff) Dev_Prop [devChoice].values[0] = 1; else Dev_Prop [devChoice].values[0] = 0;
     sendZB(command);
     waitSerial2Available();
-    empty_serial2(); // discard the answer  
+    empty_serial2(); // discard the answer 
+    eventSend(0);
+    if(mosQ)
+    {
+      snprintf(toMQTT, sizeof(toMQTT), "{\"idx\":%d,\"nvalue\":%d}",Dev_Prop[devNr].devIdx, onoff);
+      consoleOut("switch toMQTT = " + String(toMQTT));
+      if(mqttConnect() ) MQTT_Client.publish ( Mqtt_outTopic, toMQTT );
+    }
 }

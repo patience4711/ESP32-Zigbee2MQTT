@@ -8,13 +8,13 @@ char * readFilteredFrame(char frameHex[], uint8_t whatOps)
       //s_d[0]='/0';
       char messageToDecode[128] = {0};
       
-      if (whatOps == 5)
-      {
-        consoleOut("we handling a test join char");
-        strcpy (messageToDecode, "FE0345C4CB06004FFE20448100000207CB060101007E0089D85E00000C18140A000025000000000000CB061DA3FE0C45CA87E915DB8E6C7838C1A40000E4");
-      } else {
+      //if (whatOps == 5)
+      //{
+      //  consoleOut("we handling a test join char");
+      //  strcpy (messageToDecode, "FE0345C4CB06004FFE20448100000207CB060101007E0089D85E00000C18140A000025000000000000CB061DA3FE0C45CA87E915DB8E6C7838C1A40000E4");
+      //} else {
       strcpy(messageToDecode, readZB(s_d));   // fills hex string
-      }
+      //}
       size_t pos = 0;
       bool success=false;
 
@@ -50,49 +50,6 @@ char * readFilteredFrame(char frameHex[], uint8_t whatOps)
       if(! success) strcpy(frameHex, "fail");
       return frameHex;
 }
-
-// char * readFilteredFrame(char frameHex[], uint8_t whatOps)
-// {
-//       // this function extracts zigbee frames from the incoming zigbee
-//       // and returns a frame depending on whatOps
-//       char s_d[1024]= {0};
-//       //s_d[0]='/0';
-//       char messageToDecode[128] = {0};
-//       strcpy(messageToDecode, readZB(s_d));   // fills hex string
-
-//       size_t pos = 0;
-//       bool success=false;
-
-//       while (extractNextFrameHex(messageToDecode, pos, frameHex))
-//       {
-//             consoleOut("extracted frame: " + String(frameHex));
-//             //Serial.println(frameHex);
-            
-//             if (whatOps==5 && frameContains(frameHex, "45CA"))
-//             {
-//               consoleOut("→ found join frame");
-//               success=true;
-//               break;
-//             }
-//             if (whatOps==7 && frameContains(frameHex, "6700"))
-//             {
-//               consoleOut("→ found healthcheck response");
-//               success=true;
-//               break;
-//             }
-//             if (whatOps == 1 && frameContains(frameHex, "4481"))
-//             {
-//               consoleOut("→ found normal response");
-//               success=true;
-//               break;
-//             }
-      
-//       }
-//       empty_serial2(); // waste the excess bytes
-//       if(! success) strcpy(frameHex, "fail");
-//       return frameHex;
-// }
-
 
 bool extractNextFrameHex(const char *bigHex,
                          size_t &pos,

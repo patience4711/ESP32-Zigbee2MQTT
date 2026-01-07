@@ -36,7 +36,7 @@ void handle_Serial ()
              // Serial.println(F("10;ZBT=; (send zigbee message, e.g. 10;zbt=2101 (ping))"));
               Serial.println(F("10;DELETE=<file>; (delete a file)"));              
               Serial.println(F("10;HEALTH; (perform healthcheck zigbee)"));             
-              Serial.println(F("10;SET_OPS; (set normalOps for test)"));
+              Serial.println(F("10;SET_OPS; (set normalOps 0 1 5 7 9=unfiltered)"));
 
               #ifdef TEST
               Serial.println(F("10;TESTINV; (decode a testanswer for inv 0)"));
@@ -91,7 +91,6 @@ void handle_Serial ()
           } else
            if (strncasecmp(InputBuffer_Serial+3,"DUMPVARS",8) == 0) {  
               Serial.println(F("\n\nprint some variables"));
-              Serial.println("uartBusy = " + String(uartBusy));
               Serial.println("normalOps = " + String(normalOps));
               Serial.println("diagNose = " + String(diagNose));
               Serial.println("devChoice = " + String(devChoice));

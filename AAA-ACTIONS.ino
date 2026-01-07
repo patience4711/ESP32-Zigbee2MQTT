@@ -51,13 +51,13 @@ if (actionFlag >= 20 && actionFlag < 30)
           actionFlag = 0; //reset the actionflag
         }
 
-if (actionFlag == 35) { //triggered by the api (external)
-        actionFlag = 0; //reset the actionflag
-        if(diagNose == 10) diagNose = 3;
-        consoleOut("TEST actionFlag = 45 ");
-        cont_read(); // 
-        if(diagNose == 3) diagNose = 1;
-    }
+// if (actionFlag == 35) { //triggered by the api (external)
+//         actionFlag = 0; //reset the actionflag
+//         if(diagNose == 10) diagNose = 3;
+//         consoleOut("TEST actionFlag = 45 ");
+//         cont_read(); // 
+//         if(diagNose == 3) diagNose = 1;
+//     }
     if (actionFlag == 44) { //triggered by the webpage zbtest
         actionFlag = 0; //reset the actionflag
         healthCheck(); 
@@ -135,20 +135,21 @@ if (actionFlag == 35) { //triggered by the api (external)
     
        if (actionFlag >= 80 && actionFlag < 90) 
         { //triggered by the api (external)
+          // this function sends interview messages
           char mes[50]={"\0"};
           int devNr = actionFlag - 80; 
           if(diagNose == 10) diagNose = 3;  // write to the logfile
           // register for ZDO messages for cluster 8002
           strcpy(mes, "253E0280");
           sendZB(mes);
-          decodeGeneralAnswer();
+          empty_serial2();
           // register an endpoint
           strcpy(mes, "2400010401000000000000");
           sendZB(mes);
-          decodeGeneralAnswer();
+          empty_serial2();
           sprintf(mes, "2502%s%s", Dev_Prop[devNr].devAdr, Dev_Prop[devNr].devAdr);
           sendZB(mes);
-          decodeGeneralAnswer();
+          empty_serial2();
           diagNose = 1;  // rest goes to the console
           //send the commands to interview device
           actionFlag = 0; //reset the actionflag

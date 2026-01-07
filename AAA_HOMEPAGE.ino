@@ -25,7 +25,7 @@ body.l_s { background-color: #EEE;}
 <div id='menu'>
 <a class='fright' id='ml' href='/MENU'>menu</a>
 </div>
-<kop>ESP32 ECU</kop><div class='divstijl' id='maindiv'><center><p>
+<kop>ESP32-Z2M</kop><div class='divstijl' id='maindiv'><center><p>
 
 <h4>DEVICES</h4>
 <div id='devices' style='display:none;'><center><table><tr style='Background-color:lightblue; font-weight:bold; text-align:center; border:4px solid black;'>
@@ -84,10 +84,10 @@ function getData(devnr) {
       var cel = "c" + String(devnr);
       document.getElementById(cel).innerHTML = "n/a";
       if(obj.control == 3) {
-      document.getElementById(cel).innerHTML = "<a href='/CONTROL?dev=" + String(devnr) + "'><button class='btn'>" + String(devnr) + "</button</a>";
+      document.getElementById(cel).innerHTML = "<a href='/CONTROL?dev=" + String(devnr) + "'><button class='btn'>control</button</a>";
       } 
        if(obj.control == 4) {
-      document.getElementById(cel).innerHTML = "<a href='/ONOFF?dev=" + String(devnr) + "'><button class='btn'>" + String(devnr) + "</button</a>";
+      document.getElementById(cel).innerHTML = "<a href='/ONOFF?dev=" + String(devnr) + "'><button class='btn'>control</button</a>";
       }       
      
       cel="i" + String(devnr);

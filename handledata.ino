@@ -49,6 +49,7 @@ void handleDataRequests(AsyncWebServerRequest *request)
       //int devNr = atoi(request->arg("Slider").c_str()) ;
       AsyncResponseStream *response = request->beginResponseStream("application/json");
       JsonDocument root; 
+      root["devnr"] = devChoice;
       root["hue"] = lampState[devChoice].hue;  // to set the slider  
       root["sat"] = lampState[devChoice].sat; // to set the slider
       root["dim"] = lampState[devChoice].dim;  //to set the slader  
@@ -67,7 +68,8 @@ void handleDataRequests(AsyncWebServerRequest *request)
       if(checkRemote( request->client()->remoteIP().toString()) ) remote = 1; // for the menu link
       //int devNr = atoi(request->arg("Slider").c_str()) ;
       AsyncResponseStream *response = request->beginResponseStream("application/json");
-      JsonDocument root; 
+      JsonDocument root;
+      root["devnr"] = devChoice; 
       root["onoff"] = Dev_Prop[devChoice].values[0]; //1 or 0
       serializeJson(root, * response);
       request->send(response);

@@ -43,7 +43,10 @@ const char BULB_CONTROL[] PROGMEM = R"=====(
     color:white;
     border:2px solid black;
     }
-
+  #slider-label, {
+    font-size: 12px;
+    color: black;
+  }
 </style> 
 </head>
 <body onload='loadScript()'>
@@ -52,7 +55,7 @@ const char BULB_CONTROL[] PROGMEM = R"=====(
 <a  href="/" class='close' >&times;</a>
 <a href="#" id="sub" style='background:green; display: none' onclick='submitFunction()'>save</a><br>
 </div>
-<kop>ESP32-Z2M BULB CONTROL</kop><br>
+<kop>ESP32-Z2M CONTROL BULB <span id="NAME"></span></kop><br>
 <div class='divstijl' font-size:20px;' id='maindiv' style='height:72vh; width: 480px;'>
 <center>  
 <b id="pwdby">powered by Hansiart</b><br>
@@ -65,19 +68,29 @@ const char BULB_CONTROL[] PROGMEM = R"=====(
   <td><button id='bt5' onclick='buttonFunction(5)' class='bt red'>PRESET</button></td>
   </table>
   <br><br>
-  <div class='slidecontainer'>  
-  <input type="range" id="tuneHue" min="0" max="359" class="slider BHue" value="{HUE}" onchange='colorFunction()'>
+  <div class='slidecontainer'>
+  <label for="hue" id="slider-label">hue</label>
+  <input type="range" id="tuneHue" name="hue" min="0" max="359" class="slider BHue" value="{HUE}" onchange='colorFunction()'>
   </div><br>
   <div class='slidecontainer'>
-  <input type='range' id='tuneSat' max='99' min='1' class='slider BSat' value='{SAT}' onchange='colorFunction()'></td></tr>
+  <label for="tuneHue" id="slider-label">saturation</label>
+  <input type='range' id='tuneSat' name="sat" max='99' min='1' class='slider BSat' value='{SAT}' onchange='colorFunction()'></td></tr>
   </div><br>
-
-    <div class='slidecontainer'>  
+  <div class='slidecontainer'> 
+   <label for="dim" id="slider-label">level</label>
   <input type="range" id="tuneDim" name="dim" min="0" max="100" class="slider BDim" value="{Dim}" onchange='dimFunction()'>
   </div><br>
   </div>
 </div>
 <script defer>
+
+document.addEventListener("visibilitychange", function() {
+    if (!document.hidden){
+        console.log("Browser tab is visible")
+        getData(); // update the page 
+    } 
+});
+
 const btn = document.getElementById('bt4');
 var lampwaarde = 0;
 function loadScript() {
@@ -122,7 +135,8 @@ function loadData() {
       var dim = obj.dim;     
       var onoff = obj.onoff;
       var lampState = obj.state;
-      
+      var devnr = obj.devnr;
+      document.getElementById("NAME").textContent = devnr;
       if (onoff == 0) {
       document.getElementById("bt0").style.background="#b9b9c1";
       document.getElementById("maindiv").style.background="grey";

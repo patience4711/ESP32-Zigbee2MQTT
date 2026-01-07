@@ -64,8 +64,9 @@ DNSServer dnsServer;
  * - in the console an option to test inv 0 '10;TESTINV'
  * - more debug information in the console
  */
-bool uartBusy = true;
+//bool uartBusy = true;
 uint8_t normalOps = 0;
+
 typedef struct{
   char devName[20]   = "N/A";
   char devIeee[20]   = "0000000000000000";
@@ -93,14 +94,14 @@ String debugLog = ""; // the debug info see consoleOut
 // variables concerning time and timers
   WiFiUDP Udp; 
   //time_t daybeginTime = 0;
-  time_t switchoffTime = 0;
-  time_t switchonTime = 0;
-  bool dayTime=true;
+  //time_t switchoffTime = 0;
+  //time_t switchonTime = 0;
+  //bool dayTime=true;
 
 //  byte mDay = 0;
 //  String  maan = "";
   uint8_t actionFlag = 0;
-  uint8_t midnightFlag = 0;
+  //uint8_t midnightFlag = 0;
  // variables wificonfig
   char pswd[11] = "";
   char userPwd[11] = "";  
@@ -124,27 +125,20 @@ int readCounter = 0;
 //char messageHead[5];
 int diagNose = 0; // initial true but after a successful healthcheck false
 //bool Polling = false; // when true we have automatic polling
-int errorCode=10;
+//int errorCode=10;
 //int recovered = 0;
-  char txBuffer[90];
-
-  //int t_saved[YC600_MAX_NUMBER_OF_INVERTERS] = {0};
-  //float en_saved[YC600_MAX_NUMBER_OF_INVERTERS][4] = {0};
-  
-  char InputBuffer_Serial[50]; // need to be global
+ char txBuffer[90];
+ char InputBuffer_Serial[50]; // need to be global
 
 
  uint8_t zigbeeUp = 11; // initial allways initializing, this changes to 1 = up or 0 not up after initial healthcheck
  int pollOffset = 0;
- //int inverterKeuze=0;
- //int inverterCount=0;
- //char COORDINATOR_ID[13] = "";
-
-char requestUrl[15] = {"/"}; // to remember from which webpage we came  
+ char requestUrl[15] = {"/"}; // to remember from which webpage we came  
 
 // variables mqtt ********************************************
   char  Mqtt_Broker[30]=    {""};
-  char  Mqtt_outTopic[26] = {""}; // was 26
+  char  Mqtt_outTopic[26] = {""};
+  char  Mqtt_inTopic[26] = {""}; // was 26
   char  Mqtt_Username[26] = {""};
   char  Mqtt_Password[26] = {""};
   char  Mqtt_Port[5] =  {""};
@@ -176,9 +170,9 @@ lamps lampState[9];
   
   
   
-  unsigned long previousMillis = 0;        // will store last temp was read
-  static unsigned long laatsteMeting = 0; //wordt ook bij OTA gebruikt en bij wifiportal
-  static unsigned long lastCheck = 0; //wordt ook bij OTA gebruikt en bij wifiportal
+unsigned long previousMillis = 0;        // will store last temp was read
+static unsigned long laatsteMeting = 0; //wordt ook bij OTA gebruikt en bij wifiportal
+static unsigned long lastCheck = 0; //wordt ook bij OTA gebruikt en bij wifiportal
 
 #define LED_AAN    HIGH   //sinc
 #define LED_UIT    LOW
@@ -193,8 +187,8 @@ String toSend = "";
 int value = 0; 
 
 //int aantal = 0;
-int resetCounter=0;
-bool apFlag=false;
+//int resetCounter=0;
+//bool apFlag=false;
 // *******************************  log *************************************
 //// variables To record and display last events on the home page.
 //struct logEvent {
@@ -217,9 +211,6 @@ byte logNr = 0;
 
 WiFiClient espClient ;
 PubSubClient MQTT_Client ( espClient ) ;
-int Mqtt_stateIDX = 123;
-//bool getallTrigger = false;
-//bool reloadTrigger = false;
 
 #include <Ticker.h>
 Ticker resetTicker;
@@ -282,6 +273,7 @@ void setup() {
   MQTT_Client.setKeepAlive(150);
   MQTT_Client.setServer(Mqtt_Broker, atoi(Mqtt_Port));
  // MQTT_Client.setBufferSize(300); //to avoid freeze ups
+  MQTT_Client.setBufferSize(1024);
   MQTT_Client.setCallback ( MQTT_Receive_Callback ) ;
 
   if ( Mqtt_Format != 0 ) 
@@ -310,7 +302,7 @@ void setup() {
         Update_Log(2,"running");
      }
 
-  resetCounter = 0;
+  //resetCounter = 0;
   //events.send( "reload", "message"); //getGeneral and getAll triggered
   eventSend(0);
 
@@ -334,36 +326,36 @@ void loop() {
  dayTime = true;
 #endif
  
-   if(now() > switchonTime && now() < switchoffTime) 
-    {
-          if(!dayTime)  
-          {
-             dayTime = true;
-             Update_Log(1, "woke up");
-             consoleOut("woke-up");
-             // reset the dayly energy at wakeup and send mqtt message
-             //resetValues(true, true);
-             //events.send( "reload", "message"); // refresh the data and state
-             eventSend(1);
-            }
-    } else {
-         if(dayTime) 
-         {
-            dayTime = false;
-            //String term= "nightmode";
-            Update_Log(1, "nightmode");
-            consoleOut("nightmode");
-            // clean memory
-            //memset( &inMessage, 0, sizeof(inMessage) ); //zero out the 
-            //delayMicroseconds(250);
-            // we send null messages for each inverter
-            //resetValues(false, true); // make all values zero exept energy and send mqtt
-            //events.send( "reload", "message"); // refresh the data and state
-            eventSend(0);
-            midnightFlag = 250; // triggers the reset values and mqtt null message at midnight
+  //  if(now() > switchonTime && now() < switchoffTime) 
+  //   {
+  //         if(!dayTime)  
+  //         {
+  //            dayTime = true;
+  //            Update_Log(1, "woke up");
+  //            consoleOut("woke-up");
+  //            // reset the dayly energy at wakeup and send mqtt message
+  //            //resetValues(true, true);
+  //            //events.send( "reload", "message"); // refresh the data and state
+  //            eventSend(1);
+  //           }
+  //   } else {
+  //        if(dayTime) 
+  //        {
+  //           dayTime = false;
+  //           //String term= "nightmode";
+  //           Update_Log(1, "nightmode");
+  //           consoleOut("nightmode");
+  //           // clean memory
+  //           //memset( &inMessage, 0, sizeof(inMessage) ); //zero out the 
+  //           //delayMicroseconds(250);
+  //           // we send null messages for each inverter
+  //           //resetValues(false, true); // make all values zero exept energy and send mqtt
+  //           //events.send( "reload", "message"); // refresh the data and state
+  //           eventSend(0);
+  //           midnightFlag = 250; // triggers the reset values and mqtt null message at midnight
             
-         }
-    }
+  //        }
+  //   }
 
 // ******************************************************************
 //              polling every 300 seconds
@@ -410,7 +402,7 @@ void loop() {
   if (mqttFlag != 0 && millis() - triggerTime >= 1000UL * 60) {
       char toMQTT[100]={0};
 
-      snprintf(toMQTT, sizeof(toMQTT), "{\"idx\":%d,\"nvalue\":0,\"svalue\":\"%.1d\"}" , mqttFlag , 0); 
+      snprintf(toMQTT, sizeof(toMQTT), "{\"mqttFlag\",\"idx\":%d,\"nvalue\":0,\"svalue\":\"%.1d\"}" , mqttFlag , 0); 
       // mqttConnect() checks first if we are connected, if not we connect anyway
       //consoleOut("toMQTT = " + String(toMQTT));
       if(mqttConnect() ) MQTT_Client.publish ( Mqtt_outTopic, toMQTT );
@@ -443,15 +435,20 @@ void loop() {
   
   test_actionFlag();
   
-  if( Serial2.available() && normalOps == 0) {
-    diagNose = 1; //show on console
-    ledblink(2, 100);
-    empty_serial2(); // discard the messages
-    }
-  if( Serial2.available() && normalOps == 1) {
-    diagNose = 1; //show on console
-    ledblink(2, 100);
-    processNormal(); // read and decode
+  if( Serial2.available()) {
+      ledblink(2, 100);
+      switch(normalOps)
+      {
+        case 0:
+          empty_serial2(); // discard the messages
+          break;
+        case 1:
+          processNormal(); // read and decode
+          break;
+        case 9:
+          processAll(); // read all unfiltered
+          break;   
+      }
   }
    ws.cleanupClients();
    yield(); // to avoid wdt resets

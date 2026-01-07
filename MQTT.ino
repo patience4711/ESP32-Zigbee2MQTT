@@ -19,11 +19,11 @@ bool mqttConnect() {   //
       {
          //connected, so subscribe to inTopic (not for thingspeak)
         if(Mqtt_Format != 5 ) {
-        String clientid = getChipId(false) + "/in"; 
-        if(  MQTT_Client.subscribe ( clientid.c_str() ) ) {
-        //if(  MQTT_Client.subscribe ( Mqtt_inTopic ) ) { 
-               //if(diagNose) ws.textAll("subscribed to " + String(Mqtt_inTopic ));
-               consoleOut("subscribed to " + clientid);
+        //String clientid = getChipId(false) + "/in"; 
+        //if(  MQTT_Client.subscribe ( clientid.c_str() ) ) {
+        if(  MQTT_Client.subscribe ( Mqtt_inTopic ) ) { 
+               consoleOut("subscribed to " + String(Mqtt_inTopic ));
+               //consoleOut("subscribed to " + clientid);
            }
         }
          consoleOut(F("mqtt connected"));
@@ -51,7 +51,8 @@ bool mqttConnect() {   //
 void MQTT_Receive_Callback(char *topic, byte *payload, unsigned int length)
 {
     JsonDocument doc;       // We use json library to parse the payload                         
-   //  The function deserializeJson() parses a JSON input and puts the result in a JsonDocument.
+    String jsonString = "";
+    //  The function deserializeJson() parses a JSON input and puts the result in a JsonDocument.
      DeserializationError error = deserializeJson(doc, payload); // Deserialize the JSON document
     if (error)            // Test if parsing succeeds.
     {
@@ -59,58 +60,65 @@ void MQTT_Receive_Callback(char *topic, byte *payload, unsigned int length)
         return;
     } 
     consoleOut("Deserialized JSON:");
-    serializeJson(doc, Serial);     // Print in one line
-    Serial.println();
-    // We check the kind of command format received with MQTT
-      // if( doc["throttle"] != 0 )
-    //if(doc.containsKey("throttle"))
-    // if (!doc["throttle"].isNull())
-    // {
-    //    int Invert = doc["throttle"].as<int>(); 
-    //    int throtVal = doc["val"].as<int>(); 
-    //    String term = "mqtt got message {\"throttle\":" + String(Invert) + ",\"val\":" + String(throtVal) + "}";
-    //    consoleOut(term);
-    //   if(Invert > inverterCount || Invert < 0 || throtVal > 700 || throtVal < 20 )
-    //      {
-    //      consoleOut("invalid value(s), skipping");
-    //      return; 
-    //      }
-    //   // write the desired throtval 
-    //   desiredThrottle[Invert] = throtVal;
-    //   //Inv_Prop[invert].maxPower = throtVal;
-    //   actionFlag = 240 + Invert;  
-    // }  
+    serializeJson(doc, jsonString);     // Print in one line
+    consoleOut("incoming mqtt " + jsonString);
+    // the incoming message can contain
+    uint8_t dev = 0;
+    uint8_t nvalue = 0;
+    int idx = 0;
+    /*{"Battery":255,"LastUpdate":"2026-01-07 17:53:04","RSSI":12, 
+    "description":"","dtype":"Light/Switch","hwid":"5","id":"00014401","idx":945,
+    "name":"ZIGBEE-SOCKET","nvalue":1,"org_hwid":"5","stype":"Switch",
+    "svalue1":"0","switchType":"On/Off","unit":1}
+    */
+    if (!doc["idx"].isNull())
+    {
+      idx = doc["idx"].as<int>();
+      consoleOut("there is an idx " + String(idx)) ;
+      //now lookup the device
+      dev = devnrLookup(idx);
+      consoleOut("devNr " + String(dev)) ;
+    } else {
+      consoleOut("there is no idx, abort");
+      return;
+    }
+    // so there is an idx, there should also be an nvalue
+    // if (!doc["devnr"].isNull()) dev = doc["devnr"].as<uint8_t>();
+    // if (!doc["onoff"].isNull()) onoff = doc["onoff"].as<uint8_t>();
 
-    // if (!doc["poll"].isNull())
-    // {
-    //   //now we have a payload like {"poll",1} 
-    //     int inv = doc["poll"].as<int>(); 
-    //     consoleOut( "got message {\"poll\":" + String(inv) + "}" );
+    if (!doc["nvalue"].isNull()) 
+    {
+      nvalue = doc["nvalue"].as<uint8_t>();
+    } else {
+      consoleOut("no nvalue, abort");
+      return;
+    }
+    // now we should have a device nr that can be controlled
+    if(dev > -1 && dev < deviceCount)
+    {
+        if(Dev_Prop[dev].devType == 3) // smartbulb
+        {
+          consoleOut("mqtt switch " + String(dev));
+          bulbOnOff(dev, nvalue, false);
+          return;
+        }
+        if(Dev_Prop[dev].devType == 4) // smartsocket
+        {
+          consoleOut("mqtt switch " + String(dev));
+          switchSetOnOff(dev, nvalue, false);
+          return;
+        }
+    } 
+        
+    if(dev == 99) consoleOut("unknown device"); else consoleOut("nothing familiair found in mqtt");
+}
 
-    //     if( !Polling && dayTime )
-    //     {
-             
-    //         //ws.textAll( "found {\"poll\" " + String(inv) + "}\"" );
-            
-    //         iKeuze = inv;
-    //         if(iKeuze == 99) {
-    //             actionFlag = 48; // takes care for the polling of all inverters
-    //             return;  
-    //         }
-
-    //         if ( iKeuze < inverterCount ) 
-    //         { 
-    //           actionFlag = 220+inv; // takes care for the polling
-    //           return;
-    //         } else {
-    //            consoleOut("mqtt error no inv " + String(iKeuze));
-    //           return;         
-    //         }
-    //     }
-    //     else
-    //     {
-    //       consoleOut("autopolling set or nightTime, skipping");
-    //     }
-        consoleOut("nothing familiair found in mqtt");
-    //}
+int devnrLookup(int idx)
+{
+    uint8_t devNr;
+    for(int x=0; x < deviceCount; x++)
+    {
+      if( Dev_Prop[x].devIdx == idx ) return x;
+    }
+    return 99;
 }

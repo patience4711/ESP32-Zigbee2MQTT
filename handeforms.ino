@@ -11,7 +11,7 @@ void handleForms(AsyncWebServerRequest *request)
          strcpy(userPwd, request->arg("pw1").c_str());
          //pollOffset = request->arg("offs").toInt();  
   
-//BEWARE CHECKBOX
+         //BEWARE CHECKBOX
          if(request->hasParam("debug")) diagNose = 2;  else diagNose = 0;
          basisConfigsave();  // alles opslaan
          return; 
@@ -34,13 +34,13 @@ void handleForms(AsyncWebServerRequest *request)
   strcpy( Mqtt_Broker  , request->getParam("mqtAdres")   ->value().c_str() );
   strcpy( Mqtt_Port    , request->getParam("mqtPort")    ->value().c_str() );
   strcpy( Mqtt_outTopic, request->getParam("mqtoutTopic")->value().c_str() );
+  strcpy( Mqtt_inTopic,  request->getParam("mqtinTopic")->value().c_str() );
   strcpy( Mqtt_Username, request->getParam("mqtUser")    ->value().c_str() );
   strcpy( Mqtt_Password, request->getParam("mqtPas")     ->value().c_str() );
-  //strcpy( Mqtt_Clientid, request->getParam("mqtCi")     ->value().c_str() );  
-  Mqtt_stateIDX = request->arg("mqidx").toInt(); //values are 0 1 2
+  //Mqtt_stateIDX = request->arg("mqidx").toInt(); //values are 0 1 2
   Mqtt_Format = request->arg("fm").toInt(); //values are 0 1 2 3 4 5
         mqttConfigsave();  // 
-        actionFlag=24; // reconnect with these settings
+        actionFlag=49; // reconnect and send testmessage
         return;
   } //else
 // the request is something like pMax=200 MPW=0

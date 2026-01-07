@@ -50,8 +50,9 @@ void startCoordinator()
     // };
     char sendCmd[50];
     ////"26050008AA01BB01CC01DD01",
-    uartBusy = true;
+    //uartBusy = true;
     //char messageToDecode[100] = {0};
+    // dont bother about znormalOps, zigbee incoming is discarted
     Serial.println("init zb coordinator");
     char s_d[100]={0}; // provide a buffer for the call to readZB
     zigbeeUp = 11; //initial it is initializing 11, 0=down 1=up
@@ -69,7 +70,8 @@ void startCoordinator()
     
     strcpy(sendCmd,"2600");
     sendZB(sendCmd); // oke  
-    decodeGeneralAnswer();
+    waitSerial2Available();
+    empty_serial2();
 
     zigbeeUp = 0;
     
@@ -83,7 +85,7 @@ void startCoordinator()
     }
     
   empty_serial2(); //cleanup
-  uartBusy = false;
+  //uartBusy = false;
 } 
 
 void writeCoordinatorConfig()
@@ -99,7 +101,7 @@ char mes[50];
         sendZB(mes);
         waitSerial2Available();
         empty_serial2();
-        decodeGeneralAnswer();
+        //decodeGeneralAnswer();
         
         strcpy(mes, "260585000400000800"); // Channel List 11  oke
         consoleOut("Set Channel List = " + String(mes));
@@ -160,11 +162,12 @@ void register_endpoints()
   char mess[100];
   strcpy(mess, "2400010401000001010402010000"); //temperature sensor
   sendZB(mess);
-  decodeGeneralAnswer();
+  empty_serial2();
   strcpy(mess, "24000104010100010003000006000604010600"); // motion sensor
   sendZB(mess);
-  decodeGeneralAnswer();
+  empty_serial2();
   strcpy(mess, "240001040100010004000006000800000303060008000003"); // smart bulb
   sendZB(mess);
-  decodeGeneralAnswer();
+  waitSerial2Available();
+  empty_serial2();
 }

@@ -16,12 +16,20 @@ RGB            2401314301010003040100  08030107 2CB33F4C 0A00   red  xy method X
                2401314301010003040100  08030107 2C23 BF7F 0A00   green
                2401314301010003040100  08030107 8F153A0A 0A00   blue
 
+
+incoming mqtt from a smart bulb
+{"Battery":255,"Color":null,"LastUpdate":"2026-01-07 19:16:36","Level":37,"RSSI":12,"description":"",
+"dtype":"Color Switch","hwid":"5","id":"00082946","idx":946,"name":"TESTSBULB","nvalue":15,
+"org_hwid":"5","stype":"RGB","svalue1":"37","switchType":"Dimmer","unit":1}
+there is an idx 946
+unknown device
+
 */
 
-void bulbOnOff(int devNr, bool onoff) 
+void bulbOnOff(int devNr, bool onoff, bool mosQ) 
 {
     char command[50];
-
+    char toMQTT[100];
     //uint16_t id; // = Dev_Prop[devNr].devAdr;
     uint16_t id = (uint16_t)strtoul(Dev_Prop[devNr].devAdr, NULL, 16);
     sprintf(command,
@@ -32,7 +40,14 @@ void bulbOnOff(int devNr, bool onoff)
     if(onoff)lampState[devChoice].onoff = true; else lampState[devChoice].onoff = false;
     sendZB(command);
     waitSerial2Available();
-    empty_serial2(); // discard the answer  
+    empty_serial2(); // discard the answer
+    eventSend(0);
+    if(mosQ)
+    {
+       snprintf(toMQTT, sizeof(toMQTT), "{\"idx\":%d,\"nvalue\":%d}" ,Dev_Prop[devNr].devIdx, onoff);
+       consoleOut("toMQTT = " + String(toMQTT));
+       if(mqttConnect() ) MQTT_Client.publish ( Mqtt_outTopic, toMQTT );
+    }
 }
 
 void bulbDim(int devNr, int Dim, int trans) 

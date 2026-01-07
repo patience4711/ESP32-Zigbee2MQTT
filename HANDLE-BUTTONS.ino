@@ -10,7 +10,7 @@ void handleButtons(AsyncWebServerRequest *request)
       {
          case 0: // on/off
                       
-            if(lampState[devChoice].onoff) bulbOnOff(devChoice, false); else bulbOnOff(devChoice, true);
+            if(lampState[devChoice].onoff) bulbOnOff(devChoice, false, true); else bulbOnOff(devChoice, true, true);
             break;        
           case 1:
             if(lampState[devChoice].onoff) bulbColorTemp(devChoice, 2); // warmwhite
@@ -30,7 +30,7 @@ void handleButtons(AsyncWebServerRequest *request)
             break;
           case 11:
             //on/off button on switch control
-                if(Dev_Prop[devChoice].values[0] == 1) switchSetOnOff(devChoice, false); else switchSetOnOff(devChoice, true);
+                if(Dev_Prop[devChoice].values[0] == 1) switchSetOnOff(devChoice, false, true); else switchSetOnOff(devChoice, true, true);
             break;                                               
        }
    eventSend(0);

@@ -81,8 +81,8 @@ strcpy_P(page, ABOUT);
     sprintf(temp, "<tr><td>securityLevel<td>%d</td>" , securityLevel );
     strcat(page, temp);
 
-    sprintf(temp, "<tr><td>ZB resetCounter<td>%d</td></table>" , resetCounter );
-    strcat(page, temp);
+    //sprintf(temp, "<tr><td>ZB resetCounter<td>%d</td></table>" , resetCounter );
+    //strcat(page, temp);
 
     //Serial.println("page = " + String(page));
     Serial.println("length = " + String(strlen(page)));

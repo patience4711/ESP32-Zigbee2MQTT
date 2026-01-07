@@ -45,7 +45,7 @@ document.getElementById("hulp").style.display = "none";
   <b>10;INIT_N: </b> start the zigbee coordinator<br><br>
   <b>10;DIAG: </b> change debug, 0=disable, 1=console, 2=serial<br><br>
   <b>10;CLEAR: </b> clear console window<br><br> 
-
+  <b>10;SET_OPS=: </b> set normalOps value 9=all<br><br> 
   </div>
 
 <div id='msect'>
@@ -154,7 +154,11 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
               actionFlag=44; // perform the healthcheck
               return;             
           } else          
-
+           if (strncasecmp(txBuffer+3,"SET_OPS=",8) == 0) {  
+              normalOps = atoi(txBuffer + 11);
+              ws.textAll("write normalOps value: " + String(normalOps));
+               return; 
+           } else
            if (strncasecmp(txBuffer+3,"CLEAR",5) == 0) {  
               ws.textAll("clearWindow");
               return;             

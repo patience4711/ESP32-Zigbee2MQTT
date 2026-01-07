@@ -130,85 +130,9 @@ bool waitJoin()
    return false;
 }
 
-// bool waitJoin()
-// {
-//     //char s_d[256];                 // big enough for join frames
-//     char s_d[CC2530_MAX_SERIAL_BUFFER_SIZE] = {0};
-//     uint16_t shortAddr = 0;
-//     uint8_t ieeeAddr[8];
-
-//     const unsigned long timeoutMs = 60000;
-//     unsigned long start = millis();
-
-//     while (millis() - start < timeoutMs)
-//     {
-//         // Read Zigbee frame
-//         readZB(s_d);
-
-//         // Ensure termination (CRITICAL)
-//         s_d[sizeof(s_d) - 1] = '\0';
-
-//         size_t len = strlen(s_d);
-//         if (len < 24 || len > 120) {
-//           consoleOut("no joining message");
-//           continue;   // sanity check
-//         }
-//         // Walk through hex string (byte-aligned)
-//         for (size_t i = 0; i + 24 < len; i += 2)
-//         {
-//             // Extract CMD0+CMD1
-//             char cmd0cmd1[5];
-//             memcpy(cmd0cmd1, &s_d[i], 4);
-//             cmd0cmd1[4] = '\0';
-
-//             // ---- CASE 1: Device Announce (45CA) ----
-//             if (strcmp(cmd0cmd1, "45CA") == 0)
-//             {
-//                 consoleOut("Device announce received (45CA)");
-
-//                 // Bounds check for full payload
-//                 if (i + 24 > len) continue;
-
-//                 // Short address (little endian)
-//                 char shortStr[5] = {
-//                     s_d[i + 6], s_d[i + 7],
-//                     s_d[i + 4], s_d[i + 5],
-//                     '\0'
-//                 };
-//                 shortAddr = (uint16_t)strtoul(shortStr, nullptr, 16);
-
-//                 // IEEE address (8 bytes, little endian → big endian)
-//                 for (int j = 0; j < 8; j++)
-//                 {
-//                     char byteStr[3] = {
-//                         s_d[i + 8 + j * 2],
-//                         s_d[i + 9 + j * 2],
-//                         '\0'
-//                     };
-//                     ieeeAddr[7 - j] = (uint8_t)strtoul(byteStr, nullptr, 16);
-//                 }
-
-//                 addDevice(shortAddr, ieeeAddr);
-//                 return true;
-//           }
-//         }
-//     }
-
-//     consoleOut("No device joined within timeout");
-
-//     // Restore safe default (null-terminated!)
-//     int len = strlen(Dev_Prop[dev2Join].devAdr);
-//     consoleOut("len = " + String(len));
-//     strcpy(Dev_Prop[dev2Join].devAdr, "0000");
-//     consoleOut("crashed here?");
-//     return false;
-// }
-
-
-
 void enableJoin() 
 {
-    uartBusy = true;  // reserve the uart for the pairing
+    //uartBusy = true;  // reserve the uart for the pairing
     char permitCmd[]={"260836FFFCFF"};
     sendZB(permitCmd);
     empty_serial2(); // discard optional confirmation
@@ -217,12 +141,12 @@ void enableJoin()
 }
 
 void disableJoin()
-{// Optional: close network after joining
+{
     //sendZB("260836FFFC00"); 
-       char disableCmd[]={"260836FFFC00"};
-       sendZB(disableCmd);
-       consoleOut("Permit join disabled");
-       uartBusy = false;
+    char disableCmd[]={"260836FFFC00"};
+    sendZB(disableCmd);
+    consoleOut("Permit join disabled");
+    //uartBusy = false;
 }
 
 void addDevice(uint16_t shortAddr, uint8_t ieee[8]) 

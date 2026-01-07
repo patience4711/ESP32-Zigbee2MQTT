@@ -171,8 +171,8 @@ void handleDevicedel(AsyncWebServerRequest *request, uint8_t welke)
   // form action = handleInverterconfig
   // we only collect the data for this specific inverter
   // read the serverargs and copy the values into the variables
-    Serial.println("whichDevice = " + String(welke));
-    Serial.println("deviceDel devChoice = " + String(devChoice));
+    consoleOut("whichDevice = " + String(welke));
+    consoleOut("deviceDel devChoice = " + String(devChoice));
     actionFlag = 20 + devChoice;   
     procesId = 3;
     String toReturn = "/DEV?welke=0";
@@ -226,7 +226,7 @@ void remove_gaps() {
   // so if we are missing Inv_Prop1, we know that we have Inv_prop5  
   
   deviceCount = readDevicefiles(); // this should be 5 in the case above
-  Serial.println("remove gaps read deviceCount " + String(deviceCount));
+  consoleOut("remove gaps read deviceCount " + String(deviceCount));
   for(int i=0; i < deviceCount; i++ ) { // 0 1 2 3 4
   bestand_1 = "/Dev_Prop" + String(i) + ".str";
   // if this file not exixts we know that there must be a file "?inv_Prop inverterCount.str
@@ -239,7 +239,8 @@ void remove_gaps() {
    // so we just copy the struct and write that to spiffs
       consoleOut("copy the last struct " + bestand_2 + " to " + bestand_1);
       
-      structCopy(i, deviceCount);
+      //structCopy(i, deviceCount);
+      Dev_Prop[i] = Dev_Prop[deviceCount]; // copie the entyre struct
       writeStruct(bestand_1, i); // write the copied struct
       SPIFFS.remove(bestand_2);
       //SPIFFS.rename(bestand_2, bestand_1); // file 2 becomes file 1
@@ -250,28 +251,7 @@ void remove_gaps() {
 } 
 
    
-//  for(int i=0; i < 10; i++ ) 
-//  {
-//      bestand_1 = "/Inv_Prop" + String(i) + ".str";
-//      bestand_2 = "/Inv_Prop" + String(i+1) + ".str";
-//      //Serial.println("bestand_1 = " + bestand_1);
-//      //Serial.println("bestand_2 = " + bestand_2);
-//      if(!SPIFFS.exists(bestand_1) && SPIFFS.exists(bestand_2)) 
-//      {
-//      //Serial.println(bestand_1 + " not exist and " + bestand_2 + " exists"); 
-//        found = true;
-//        SPIFFS.rename(bestand_2, bestand_1); // file 2 becomes file 1
-//      //Serial.println("renamed " + bestand_1);
-//        printInverters();    
-//      }
-//  }
-//  // we remove the last file
-//  if (found) 
-//    {
-//    bestand_1 = "/Inv_Prop" + String(inverterCount) + ".str"; 
-//    if(!SPIFFS.exists(bestand_1) ) SPIFFS.remove(bestand_1);
-//    }
-//}
+
 // ********************************************************************
 //                     processor
 // *********************************************************************
@@ -385,17 +365,18 @@ void deviceForm()
 // now we have toSend ready to include in the inverterpage
 }
 
-void structCopy(int a, int b) {
+// void structCopy(int a, int b) {
 
-   //copy all the values of struct 1 to struct 2  
-   strcpy(Dev_Prop[a].devName,     Dev_Prop[b].devName);
-   strcpy(Dev_Prop[a].devIeee,   Dev_Prop[b].devIeee);
-   strcpy(Dev_Prop[a].devAdr,       Dev_Prop[b].devAdr);
-   Dev_Prop[a].devType           = Dev_Prop[b].devType;
-   Dev_Prop[a].devIdx            = Dev_Prop[b].devIdx;
-
-   // now write file a and remove file b
-}
+//    //copy all the values of struct 1 to struct 2  
+//    strcpy(Dev_Prop[a].devName,     Dev_Prop[b].devName);
+//    strcpy(Dev_Prop[a].devIeee,   Dev_Prop[b].devIeee);
+//    strcpy(Dev_Prop[a].devAdr,       Dev_Prop[b].devAdr);
+//    Dev_Prop[a].devType           = Dev_Prop[b].devType;
+//    Dev_Prop[a].devIdx            = Dev_Prop[b].devIdx;
+//    Dev_Prop[a]values             = Dev_Prop[b].values;
+//    Dev_Prop[a].toMqtt            = Dev_Prop[b].toMqtt;
+//    // now write file a and remove file b
+// }
 
 void deviceDelete(uint8_t devNr)
 {

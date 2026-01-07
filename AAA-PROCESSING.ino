@@ -27,7 +27,6 @@ void processNormal()
       //the first thing we need to find out is for which device the message is
     for(int x=0; x < deviceCount; x++)
     {
-      //consoleOut("Dev_Prop[x].devAdr = " + String(Dev_Prop[x].devAdr));
       if (strstr(messageToDecode, Dev_Prop[x].devAdr) != NULL) {
           deviceNr = x ;
           consoleOut("Found device # " + String(x));
@@ -35,12 +34,11 @@ void processNormal()
           deviceType = Dev_Prop[x].devType;
           consoleOut("the device type = " + String(deviceType));
           consoleOut("the device idx = " + String(idx));
-
           break;
       }
     }
     if( deviceNr == -1 ) {
-        consoleOut("the message could not be linked to a device");
+        consoleOut("unknown device");
         return;
     }
        
@@ -48,11 +46,6 @@ void processNormal()
     {
           tail = split(messageToDecode, "44810000"); // remove the 0000 as well
           consoleOut("tail " + String(tail) );
-          //consoleOut("length messageToDecode = " + String(strlen(messageToDecode)));
-          //char devAddr[5];
-          //FE1C448100000204 295F 0101009D001B00C400000808920A0000297008295F1D49
-          //now tail =  02040487 010100710021FF7B00000808DA0A0000297A080487
-          //if(strstr(messageToDecode, "448100000204") && strlen(messageToDecode) < 90) {
             if (strncmp(tail, "0204", 4) == 0)
               {
               //memcpy(devAddr, messageToDecode + 16, 4);
@@ -137,14 +130,74 @@ void processNormal()
       // }
 } 
 
-void processHealth(char * frame)
+void processAll()
 {
-Serial.println("processing a health frame");
-Serial.println("The frame is " + String(frame));
+// this function reeds all incoming messages unfiltered
+    char messageToDecode[CC2530_MAX_SERIAL_BUFFER_SIZE] = {0};
+    char s_d[CC2530_MAX_SERIAL_BUFFER_SIZE] = {0};
+    //consoleOut("processing a normal frame");
+    strcpy(messageToDecode, readZB(s_d));
+    consoleOut("The messageToDecode is " + String(messageToDecode));
+    consoleOut("normalOps = 9, no processing");
+    }
+
+    // *******************************************************************************************************************
+//                             extract values
+// *******************************************************************************************************************
+float extractValue(uint8_t startPosition, uint8_t valueLength, float valueSlope, float valueOffset, char toDecode[CC2530_MAX_SERIAL_BUFFER_SIZE])
+    {
+    char tempMsgBuffer[64] = {0}; // was 254
+    yield();
+    // first the last byte
+    strncpy(tempMsgBuffer, toDecode + startPosition + 2, valueLength/2);
+    //than the fst byte
+    strncat(tempMsgBuffer, toDecode + startPosition, valueLength/2);
+    consoleOut ("extracted at offset 41: " + String(tempMsgBuffer));
+    // now we have the part of the string "startposition - number of bytes"
+    // we calculate the value it is representing with strtol and correct it with valueSlope and offset
+    yield();
+    // *** IMPORTANT: interpret as signed 16-bit ***
+    int16_t signedValue = (int16_t)strtol(tempMsgBuffer, NULL, 16);
+    //return (valueSlope * (float)strtol(tempMsgBuffer, 0, 16)) + valueOffset;
+    return (valueSlope * signedValue) + valueOffset;
 }
 
-void processJoin(char * frame)
+
+// ********************************************************************************************************
+//                                    byte based extract value
+// ********************************************************************************************************
+float extractValueBB(uint8_t startPosition, uint8_t byteCount,
+                   float valueSlope, float valueOffset,
+                   bool isSigned,
+                   const uint8_t *payload)
 {
-Serial.println("processing a join frame");
-Serial.println("The frame is " + String(frame));
+    // Build the integer from bytes (Zigbee sensors normally send BIG-endian)
+    uint32_t raw = 0;
+
+    for (uint8_t i = 0; i < byteCount; i++) {
+        raw = (raw << 8) | payload[startPosition + i];
+    }
+
+    // Handle signed values using two's complement
+    if (isSigned) {
+        uint32_t signBit = 1UL << (byteCount * 8 - 1);
+
+        if (raw & signBit) {
+            uint32_t mask = (1UL << (byteCount * 8)) - 1;
+            raw = raw - (mask + 1);
+        }
+    }
+
+    return valueSlope * (int32_t)raw + valueOffset;
+}
+
+
+
+int deviceLookup(const char compare[5])
+{
+  for (int z=0; z < deviceCount; z++) 
+        if (strcmp(compare, Dev_Prop[z].devAdr) == 0) {
+            return z;
+        }
+  return 99;
 }

@@ -135,8 +135,8 @@ void mqttConfigsave() {
 //    json["Mqtt_Enabled"] = Mqtt_Enabled;
     json["Mqtt_Broker"] = Mqtt_Broker;
     json["Mqtt_Port"] = Mqtt_Port;    
-    json["Mqtt_stateIDX"]       = Mqtt_stateIDX;  
-    //json["Mqtt_inTopic"] = Mqtt_inTopic;
+    //json["Mqtt_stateIDX"]       = Mqtt_stateIDX;  
+    json["Mqtt_inTopic"] = Mqtt_inTopic;
     json["Mqtt_outTopic"] = Mqtt_outTopic;
     json["Mqtt_Username"] = Mqtt_Username;
     json["Mqtt_Password"] = Mqtt_Password;
@@ -203,13 +203,14 @@ bool file_open_for_read(const char* bestand)
               }            
 
             if ( strcmp(bestand, "/mqttconfig.json") == 0) {
-                     strcpy(Mqtt_Broker,   doc["Mqtt_Broker"] | "192.168.0.100");
-                     strcpy(Mqtt_Port,     doc["Mqtt_Port"]   | "1883");  
-                     strcpy(Mqtt_outTopic, doc["Mqtt_outTopic"] | "domoticz/in");         
+                     strcpy(Mqtt_Broker,   doc["Mqtt_Broker"]   | "192.168.0.100");
+                     strcpy(Mqtt_Port,     doc["Mqtt_Port"]     | "1883");  
+                     strcpy(Mqtt_outTopic, doc["Mqtt_outTopic"] | "domoticz/in"); 
+                     strcpy(Mqtt_inTopic,  doc["Mqtt_inTopic"]  | "domoticz/out");        
                      strcpy(Mqtt_Username, doc["Mqtt_Username"] | "n/a");
                      strcpy(Mqtt_Password, doc["Mqtt_Password"] | "n/a");
                      Mqtt_Format = doc["Mqtt_Format"].as<int>() | 0;
-                     Mqtt_stateIDX = doc["Mqtt_stateIDX"].as<int>() | 123;      
+                     //Mqtt_stateIDX = doc["Mqtt_stateIDX"].as<int>() | 123;      
             }
              return true;
 } 
