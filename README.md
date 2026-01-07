@@ -14,7 +14,7 @@ Everything is done via a webinterface. Below is an example of the frontpage, sho
 # downloads
 firmware for [the cc2530](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob/main/CC2530ZNP-Prod.bin)<br>
 firmware for [the cc2531](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob/main/CC2531ZNP-Prod.bin)<br>
-2026-01-06 download [ESP32-Zigbee2Mqtt_v1_4](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob/main/ESP32_ECU_v1_4.bin)<br>
+2026-01-06 download [ESP32-Zigbee2Mqtt_v1_4](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob/main/ESP32_ZIGBEE_1_4.ino.bin)<br>
 
 ## simple hardware: 
  - An ESP32<br>
