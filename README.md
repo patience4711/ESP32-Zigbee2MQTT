@@ -1,6 +1,12 @@
 # ESP32-Zigbee2MQTT
-A zigbee coordinator like Zigbee2MQTT on the ESP32 platform. 
-This software is basically a zigbee coordinator that, in theory, can join and control any zigbee device. 
+An **ESP32 based zigbee coordinator** to bridge Zigbee devices to MQTT (similar in idea to Zigbee2MQTT). 
+Works with an ESP32 + CC2530 Zigbee module to control smart bulbs, sensors, switches, etc. via MQTT. 
+## features
+- Zigbee coordinator on **ESP32**
+- Integrates with **MQTT** brokers
+- Supports motion sensors, temperature sensors, smart bulbs, smart sockets
+- Web UI for joining and controlling devices
+
 Everything is done via a webinterface. Below is an example of the frontpage, showing joined devices.<br>
 ![front_6_1](https://github.com/user-attachments/assets/e92021f0-b7fd-49e9-bea4-a19ee2662a60)
 
