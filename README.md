@@ -2,7 +2,8 @@
 A zigbee coordinator like Zigbee2MQTT on the ESP32 platform. 
 This software is basically a zigbee coordinator that, in theory, can join and control any zigbee device. 
 Everything is done via a webinterface. Below is an example of the frontpage, showing joined devices.<br>
-![front_6_1](https://github.com/user-attachments/assets/afe00784-d670-4674-ab23-bcc5d5e1a985)
+![front_6_1](https://github.com/user-attachments/assets/e92021f0-b7fd-49e9-bea4-a19ee2662a60)
+
 
 # downloads
 firmware for [the cc2530](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob/main/CC2530ZNP-Prod.bin)<br>
@@ -19,7 +20,8 @@ firmware for [the cc2531](https://github.com/patience4711/ESP32-Zigbee2MQTT/blob
 - setup, join and control devices like smart lamps, smart sockets, sensors
 - everything is done via webinterface
 - devices can be controlled via mosquitto
-- data is sent via mosquitt0.
+- data is sent via mosquitto
+- it can work with domoticz so we can make it speech controlled via google home.
 
 ## global working
 The coordinator starts a zigbee network. Within the network the coordinator can read and send messages to the devices, provided that they are joined. The incoming messages are state and readings data, eg temperature of a sensor.
