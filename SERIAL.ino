@@ -31,8 +31,8 @@ void handle_Serial ()
               scroll(4);
               Serial.println(F("*** AVAILABLE COMMANDS ***"));
               Serial.println(F("10;DIAG=x; (if x = 1 set diagNose for serial debug)"));
-             // Serial.println(F("10;POLL=x; (poll inverter nr x (9=all))")); 
-             // Serial.println(F("10;QUERY=x; (query inverter nr x (9=all))"));                           
+              Serial.println(F("10;DEVICES; (list deivices in spiffs")); 
+              Serial.println(F("10;STARTZB; (start zb coordinator)"));                           
              // Serial.println(F("10;ZBT=; (send zigbee message, e.g. 10;zbt=2101 (ping))"));
               Serial.println(F("10;DELETE=<file>; (delete a file)"));              
               Serial.println(F("10;HEALTH; (perform healthcheck zigbee)"));             
@@ -46,12 +46,15 @@ void handle_Serial ()
               
  
 
-          if (strncasecmp(InputBuffer_Serial+3,"ZB_READ",7) == 0) {  
-              Serial.println(F("\n\nread zb"));
-              actionFlag = 20;
-              return;             
+          if (strncasecmp(InputBuffer_Serial+3,"DEVICES",7) == 0) {  
+              printDevices();
+              return;           
           } else
-           
+
+          if (strncasecmp(InputBuffer_Serial+3,"STARTZB",7) == 0) {  
+              startCoordinator();
+              return;           
+          } else
            if (strncasecmp(InputBuffer_Serial+3,"HEALTH",6) == 0) {  
               Serial.println(F("\n\nchecking the ZB system"));
               healthCheck();

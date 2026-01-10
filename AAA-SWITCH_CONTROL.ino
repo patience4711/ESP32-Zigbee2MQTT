@@ -32,7 +32,8 @@ const char SWITCH_PAGE[] PROGMEM = R"=====(
 <body onload='loadScript()'>
 <div id='msect'>
 <div id="menu">
-<a href="/MENU" style="float:right">menu</a>
+<a  href="/" class='close' >&times;</a>
+<a href=# id="goBack">devices</a>
 </div>
 </div>
 <div id='msect'>
@@ -49,7 +50,7 @@ const char SWITCH_PAGE[] PROGMEM = R"=====(
 </div></body>
 
 <script>
-
+var myLink=document.getElementById("goBack");
 document.addEventListener("visibilitychange", function() {
     if (!document.hidden){
         console.log("Browser tab is visible")
@@ -81,7 +82,8 @@ function getData() {
       var antwoord = this.responseText;
       var obj = JSON.parse(antwoord);
       var onoff = obj.onoff;
-      var devnr = obj.devnr;     
+      var devnr = obj.devnr; 
+      myLink.href="/DEV?welke="+devnr;
       document.getElementById("NAME").textContent = devnr;
       if (onoff == 0) {
       document.getElementById("bt0").style.background="#b9b9c1";
@@ -127,7 +129,7 @@ if (!!window.EventSource) {
 )=====";
 
 
-void switchSetOnOff(int devNr, bool onoff, bool mosQ) 
+void switchOnOff(int devNr, bool onoff, bool mosQ) 
 {
     char command[50];
     char toMQTT[100];
@@ -143,7 +145,7 @@ void switchSetOnOff(int devNr, bool onoff, bool mosQ)
         Dev_Prop[devNr].devAdr,
         onoff ? "01" : "00");
     consoleOut("the on/off command = " + String(command));
-    if(onoff) Dev_Prop [devChoice].values[0] = 1; else Dev_Prop [devChoice].values[0] = 0;
+    if(onoff) Dev_Prop [devNr].values[0] = 1; else Dev_Prop [devNr].values[0] = 0;
     sendZB(command);
     waitSerial2Available();
     empty_serial2(); // discard the answer 

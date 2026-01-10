@@ -6,7 +6,7 @@ void joinOnActionflag()
    //we want the joining process logged in a file so diagNose = 3
    char term[20];
    debugLog="";
-   diagNose = 2;
+   diagNose = 1;
    consoleOut("trying join inv " + String(devChoice));
    bool shouldSave = false;
    if( zigbeeUp != 1) {
@@ -19,6 +19,8 @@ void joinOnActionflag()
    enableJoin();
    // now the serial2 buffr should be empty
    normalOps = 5;
+  
+   
    if( waitJoin() ) 
     {
        //DebugPrintln("joining success, saving configfile");
@@ -69,15 +71,13 @@ bool waitJoin()
     unsigned long timeoutMs = 60000;
     unsigned long start = millis();
     char comp[5] = {0};
+    joinAbort = false;
     while (millis() - start < timeoutMs) 
     {
-        //strcpy(toDecode, readZB(s_d)); // fills s_d with hex string like "FE0C45CA..."
-        //if(normalOps == 5 )
-        //{
-             strcpy(toDecode, readFilteredFrame(s_d, 5)); // get a filtered frame
-        //} else {
-         //    strcpy(toDecode, readZB(s_d)); // fills s_d with hex string like "FE0C45CA..."
-       // }     
+        if ( joinAbort ) break;
+         
+        strcpy(toDecode, readFilteredFrame(s_d, 5)); // get a filtered frame
+    
         int len = strlen(toDecode);
         if(len > 0){
             if (len < 10 || len > 120) 
@@ -99,23 +99,26 @@ bool waitJoin()
                 //memcpy(shortAddress, toDecode + 8, 4); shortAddress[4]='\0';
                 //memcpy(ieeeAddress, toDecode + 12, 16); ieeeAddress[16]='\0';
                 // copy directly to the Dev_Prop
+               // char devAdr[5];   // 4 hex chars + null terminator
+               // devAdr[0] = toDecode[8 + 2];
+               // devAdr[1] = toDecode[8 + 3];
+               // devAdr[2] = toDecode[8 + 0];
+               // devAdr[3] = toDecode[8 + 1];
+               // devAdr[4] = '\0';
+               // if we reverse this the control goes wrong
+               //copy devAdr
+               // char *dst = Dev_Prop[dev2Join].devAdr;
+               // dst[0] = toDecode[10];  // E
+               // dst[1] = toDecode[11];  // 9
+               // dst[2] = toDecode[8];   // 8
+               // dst[3] = toDecode[9];   // 7
+               // dst[4] = '\0';
+               
                 memcpy(Dev_Prop[dev2Join].devAdr, toDecode + 8, 4); Dev_Prop[dev2Join].devAdr[4]='\0';
+                
                 memcpy(Dev_Prop[dev2Join].devIeee, toDecode + 12, 16); Dev_Prop[dev2Join].devIeee[16]='\0';
                       
-                //char shortStr[5] = { toDecode[i+6], toDecode[i+7], toDecode[i+4], toDecode[i+5], '\0' };
-                //shortAddr = (uint16_t) strtoul(shortStr, nullptr, 16);
-
-                // IEEE address (8 bytes, little endian)
-                // for (int j = 0; j < 8; j++) 
-                // {
-                //     char byteStr[3] = { toDecode[i + 8 + j*2], toDecode[i + 9 + j*2], '\0' };
-                //     ieeeAddr[7-j] = (uint8_t) strtoul(byteStr, nullptr, 16); // reverse to big endian
-                // }
-
-                // we need to save the address and ieee
-                //strcpy(Dev_Prop[dev2Join].devAdr, shortAddress);
-                //strcpy(Dev_Prop[dev2Join].devIeee, ieeeAddress);
-                consoleOut("New device joined: short=" +
+               consoleOut("New device joined: short=" +
                 String(Dev_Prop[dev2Join].devAdr) + " ieee=" + String(Dev_Prop[dev2Join].devIeee));
                 
                 //addDevice(shortAddr, ieeeAddr);
@@ -123,9 +126,16 @@ bool waitJoin()
                 
                 return true;
         }
-   
+        
+    
     }
-   consoleOut("No device joined within timeout");
+   if(joinAbort) 
+   {
+      consoleOut("joining aborted");
+   } else {
+      consoleOut("No device joined within timeout");
+   }
+
    strcpy(Dev_Prop[dev2Join].devAdr, "0000"); // put back the original value
    return false;
 }

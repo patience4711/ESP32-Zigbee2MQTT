@@ -13,19 +13,17 @@ void healthCheck() {
  
     }
 
- 
     if(!timeRetrieved) { 
       getTijd();
       eventSend(1);
     }
-        
 
-    normalOps = 7; 
+    //normalOps = 7; 
     if(checkCoordinator() ) // send the 2700 command 
     {
         zigbeeUp = 1; // all oke
         diagNose = 0; // reset diagNose as this costs cpu
-        normalOps = 1; // normal working process
+        //normalOps = 1; // normal working process
     } else {
         consoleOut("zb down");
         // try to start the coordinator
@@ -42,8 +40,8 @@ bool checkCoordinator() {
 // we evaluate that
 // first empty serial2, comming from coordinator this is necessary;
     //empty_serial2(); is done in the loop
-    char coordinator_id[13];
-    getCoordinatorId(coordinator_id);        // fill the array CCDBA71699808099
+    //char coordinator_id[13];
+   // getCoordinatorId(coordinator_id);        // fill the array CCDBA71699808099
 
     char * tail;
 
@@ -71,7 +69,7 @@ bool checkCoordinator() {
   
       //check if coordinator_id is in the string, then split it there
 
-      consoleOut("checkCoordinator tail - " + String(reCeived));
+      consoleOut("checkCoordinator tail = " + String(reCeived));
           // the tail should contain 0709
       if( strstr(reCeived, "0709") ) 
       {

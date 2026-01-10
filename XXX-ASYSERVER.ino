@@ -255,7 +255,7 @@ request->send_P(200, "text/html", "");
 
 server.on("/DEV_DEL", HTTP_GET, [](AsyncWebServerRequest *request) {
   if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
-  normalOps = 0; // prevent zigbee interruption
+  normalOps = 0; // prevent zigbee reception
   //int i = atoi(request->arg("welke").c_str()) ;
   Serial.println("DEV_DEL was called, device to del : " + String(devChoice));
   handleDevicedel(request, devChoice);
@@ -264,7 +264,18 @@ server.on("/DEV_DEL", HTTP_GET, [](AsyncWebServerRequest *request) {
 server.on("/DEV", HTTP_GET, [](AsyncWebServerRequest *request) {
     //strcpy( requestUrl, request->url().c_str() );
     //bool nothing = false;
-    int i = atoi(request->arg("welke").c_str()) ;
+    int i=0;
+    if(request->hasParam("cancel"))
+    {
+       i = atoi(request->arg("cancel").c_str()) ;
+       joinAbort=true;
+       consoleOut("joining aborted");
+    } else
+    if(request->hasParam("welke"))
+    {
+      i = atoi(request->arg("welke").c_str()) ;
+    } 
+    //int i = atoi(request->arg("welke").c_str()) ;
     devChoice = i;
     String toReturn = "/DEV?welke=" + String(devChoice);
     strcpy(requestUrl, toReturn.c_str() ); 

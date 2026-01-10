@@ -1,55 +1,4 @@
 
-// void cont_read()
-// {
-//       sendZB(txBuffer);
-//       // call this then sendZB("25049F8D0B") or sendZB("25049F8D01")
-//       unsigned long start = millis();
-//       while (millis() - start < 2000) {
-//         while (Serial2.available()) {
-//           int b = Serial2.read();
-//           if (b < 16) Serial.printf("0");
-//           Serial.printf("%X ", b);
-//         }
-// }
-// Serial.println();
-
-// }
-
-// // --- Send ZNP frame ---
-// void sendZNP(uint8_t cmd0, uint8_t cmd1, const uint8_t *data, uint8_t len) 
-// {
-//   Serial2.write(0xFE);       // SOF
-//   Serial2.write(len);        // LEN
-//   Serial2.write(cmd0);       // CMD0
-//   Serial2.write(cmd1);       // CMD1
-//   for (int i = 0; i < len; i++) {
-//     Serial2.write(data[i]);
-//   }
-
-//   // FCS over LEN..DATA
-//   uint8_t buf[256];
-//   buf[0] = len;
-//   buf[1] = cmd0;
-//   buf[2] = cmd1;
-//   for (int i = 0; i < len; i++) buf[3 + i] = data[i];
-//   Serial2.write(calcFCS(buf, len + 3));
-// }
-// // --- Helper to calculate FCS (XOR of all bytes except SOF) ---
-// uint8_t calcFCS(const uint8_t *msg, uint8_t len) 
-// {
-//   uint8_t fcs = 0;
-//   for (int i = 0; i < len; i++) {
-//     fcs ^= msg[i];
-//   }
-//   return fcs;
-// }
-
-// void permitJoin(uint8_t duration) {
-//   // ZDO_MGMT_PERMIT_JOIN_REQ (CMD0=0x25, CMD1=0x36)
-//   // dstAddr(2) + duration(1) + tcSignificance(1)
-//   uint8_t payload[] = { 0x00, 0x00, duration, 0x01 };
-//   sendZNP(0x25, 0x36, payload, sizeof(payload));
-// }
 
 // *****************************************************************************
 //                            read zigbee
@@ -81,7 +30,7 @@ char * readZB( char inMess[] ) {
                 if(Serial2.peek() == 0xFE && readCounter > 70) {
                   consoleOut("peeked FE, stop reading");
                   inMess[readCounter +1] = '\0';
-                  empty_serial2();
+                  empty_serial2(); // waste the rest
                   break;
                 }
                 sprintf( oneChar, "%02X", Serial2.read() ); // always uppercase
@@ -91,6 +40,7 @@ char * readZB( char inMess[] ) {
             }
             else
             {
+                // we read the max amount of bytes
                 empty_serial2(); // remove all excess data in the buffer at once
             }
             //if (Serial2.available() == 0) delay(120); // we wait if there comes more data
@@ -104,9 +54,7 @@ char * readZB( char inMess[] ) {
         }   
 
         consoleOut("readZB " + String(inMess) + "  rc=" + String(readCounter) + "\n");  
-        
-           //if(diagNose == 1) Serial.println(term); else if(diagNose == 2) ws.textAll(term);
-        //}
+
         delayMicroseconds(250); // give it some time
         return inMess;
 }
@@ -287,21 +235,21 @@ char *split(char *str, const char *delim)
 }
 
 
-void getCoordinatorId(char coordId[17]) {
-    uint8_t baseMac[6];
-    esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
-    if (ret != ESP_OK) {
-        strcpy(coordId, "0000000000000000"); // fallback in case of error
-        return;
-    }
-    // Get unique chip ID (part of ESP32's MAC E-fuse)
-    uint32_t chipId = (uint32_t)(ESP.getEfuseMac() >> 32);
-    // fill 6 bytes from mac
-    for (int i = 0; i < 6; i++) {
-        sprintf(&coordId[i*2], "%02X", baseMac[i]);
-    }
-    // Append 2 bytes from chipId
-    //sprintf(&coordId[12], "%04X", (chipId & 0xFFFF));
-    coordId[12] = '\0'; // null terminate
-    consoleOut("getCoordinatorId result = " + String(coordId));
-}
+// void getCoordinatorId(char coordId[17]) {
+//     uint8_t baseMac[6];
+//     esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
+//     if (ret != ESP_OK) {
+//         strcpy(coordId, "0000000000000000"); // fallback in case of error
+//         return;
+//     }
+//     // Get unique chip ID (part of ESP32's MAC E-fuse)
+//     uint32_t chipId = (uint32_t)(ESP.getEfuseMac() >> 32);
+//     // fill 6 bytes from mac
+//     for (int i = 0; i < 6; i++) {
+//         sprintf(&coordId[i*2], "%02X", baseMac[i]);
+//     }
+//     // Append 2 bytes from chipId
+//     //sprintf(&coordId[12], "%04X", (chipId & 0xFFFF));
+//     coordId[12] = '\0'; // null terminate
+//     consoleOut("getCoordinatorId result = " + String(coordId));
+// }

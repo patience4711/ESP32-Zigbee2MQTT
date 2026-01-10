@@ -128,6 +128,7 @@ const char WAIT_JOIN[] PROGMEM = R"=====(
 <br><br><br>
 <div id="marq" style='margin: 50px; width: 40%; background:#e7f2bd;'>
 <marquee><h3>joining, do not interrupt .....</h3></marquee>
+<br><a href=# id='goBack'>abort</a>
 </div>
 <div id="hiddenSucc" style="display:none"<br><br><br>
 <h3>The joining succeeded.
@@ -141,6 +142,7 @@ const char WAIT_JOIN[] PROGMEM = R"=====(
 </div>
 
 <script>
+var myLink=document.getElementById("goBack");
 function loadScript() {
   getData();
   loadData();
@@ -157,7 +159,8 @@ function getData() {
       var antwoord = this.responseText;
       var obj = JSON.parse(antwoord);
       var devAdr = obj.devAdr;
-      
+      var devNr = obj.dev2Join;
+      myLink.href ="/DEV?cancel="+devNr;
       if( devAdr != "1111" ) {
           if( devAdr == "0000" ) {
             document.getElementById("marq").style.display = "none";

@@ -51,6 +51,19 @@ if (actionFlag >= 20 && actionFlag < 30)
           actionFlag = 0; //reset the actionflag
         }
 
+if (actionFlag >= 30 && actionFlag < 40) 
+        { //triggered by devices
+          
+           int devNr = actionFlag - 30; 
+           String bestand = "/Dev_Prop" + String(devChoice) + ".str"; // /Inv_Prop0.str
+           consoleOut("going to write " + bestand ); 
+           writeStruct(bestand, devChoice); // alles opslaan in SPIFFS
+           diagNose = 1;  // rest goes to the console
+           actionFlag = 0; //reset the actionflag
+        }
+
+
+
 // if (actionFlag == 35) { //triggered by the api (external)
 //         actionFlag = 0; //reset the actionflag
 //         if(diagNose == 10) diagNose = 3;
@@ -201,6 +214,6 @@ if (actionFlag >= 20 && actionFlag < 30)
         } 
      // the not connected message is displayed by mqttConnect()
     }
-
+actionFlag = 0;
 
 } // end test actionflag

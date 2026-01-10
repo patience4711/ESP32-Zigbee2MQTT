@@ -32,12 +32,18 @@ void bulbOnOff(int devNr, bool onoff, bool mosQ)
     char toMQTT[100];
     //uint16_t id; // = Dev_Prop[devNr].devAdr;
     uint16_t id = (uint16_t)strtoul(Dev_Prop[devNr].devAdr, NULL, 16);
-    sprintf(command,
-        "2401%02X%02X01010600040100040301%s00",
-        id & 0xFF, (id >> 8) & 0xFF,
+    // sprintf(command,
+    //     "2401%02X%02X01010600040100040301%s00",
+    //     id & 0xFF, (id >> 8) & 0xFF,
+    //     onoff ? "01" : "00");
+        
+        sprintf(command,
+        "2401%s01010600040100040301%s00",
+        Dev_Prop[devNr].devAdr,
         onoff ? "01" : "00");
+    
     consoleOut("the on/off command = " + String(command));
-    if(onoff)lampState[devChoice].onoff = true; else lampState[devChoice].onoff = false;
+    if(onoff)lampState[devNr].onoff = true; else lampState[devNr].onoff = false;
     sendZB(command);
     waitSerial2Available();
     empty_serial2(); // discard the answer
@@ -57,15 +63,23 @@ void bulbDim(int devNr, int Dim, int trans)
     if (Dim > 100) Dim = 100;
     if (trans > 0xFFFF) trans = 0xFFFF;
     //uint16_t id; // = Dev_Prop[devNr].devAdr;
-    uint16_t id = (uint16_t)strtoul(Dev_Prop[devNr].devAdr, NULL, 16);
+    //uint16_t id = (uint16_t)strtoul(Dev_Prop[devNr].devAdr, NULL, 16);
     uint8_t level = (Dim * 254) / 100;
     //example 24013143 01010800040100060301 047F0A00
     //        24013143 01010003040100060301  00440000
     // Move to Level (with On/Off) — command 0x00
-    sprintf(command,
-        "2401%02X%02X0101080004010006030104%02X%02X%02X",
-        id & 0xFF,
-        (id >> 8) & 0xFF,
+    // sprintf(command,
+    //     "2401%02X%02X0101080004010006030104%02X%02X%02X",
+    //     id & 0xFF,
+    //     (id >> 8) & 0xFF,
+    //     level,
+    //     trans & 0xFF,
+    //     (trans >> 8) & 0xFF
+    // );
+
+        sprintf(command,
+        "2401%s0101080004010006030104%02X%02X%02X",
+        Dev_Prop[devNr].devAdr,
         level,
         trans & 0xFF,
         (trans >> 8) & 0xFF
@@ -89,13 +103,10 @@ void bulbColorTemp(int devNr, int temp)
     if(temp == 4) {strcpy(lightTemp, "9900"); lampState[devChoice].state = 4;}
     //consoleOut("lightTemp = " + String(lightTemp));
     
-    //uint16_t id;
-    //sscanf(Dev_Prop[devNr].devAdr, "%4x", &id);
-    uint16_t id = (uint16_t)strtoul(Dev_Prop[devNr].devAdr, NULL, 16);
-    //                2401 3143   010100030401000703010A 7201 0A00 warm white
-    sprintf(command, "2401%02X%02X010100030401000703010A%s0A00", id & 0xFF,(id >> 8) & 0xFF, lightTemp );
+    sprintf(command, "2401%s010100030401000703010A%s0A00", 
+        Dev_Prop[devNr].devAdr, 
+       lightTemp );
     //if(temp==2) sprintf(command, "2401%02X%02X010100030401000703010A%s0A00", id & 0xFF,(id >> 8) & 0xFF, "FA00" ); 
-    //if(temp==3) sprintf(command, "2401%02X%02X010100030401000703010A%s0A00", id & 0xFF,(id >> 8) & 0xFF, "9900" ); 
     consoleOut("the colortemperature command = " + String(command));
     saveLamp(devChoice, lampState[devChoice]);
     sendZB(command);
@@ -110,18 +121,14 @@ consoleOut("we are in bulbSetHue");
     if (Hue > 360) Hue = 360;
     lampState[devChoice].hue = Hue;
     uint8_t zigHue = (uint8_t)((Hue * 254) / 360);
-    uint16_t id = (uint16_t)strtoul(Dev_Prop[devNr].devAdr, NULL, 16);
     //                2401 3143   010100030401000703010A 7201 0A00 warm white
-    //command move to hue
-        sprintf(command,
-        "2401%02X%02X0101000304010008030100%02X00%02X%02X",
-        id & 0xFF,
-        (id >> 8) & 0xFF,
+    sprintf(command,
+        "2401%s0101000304010008030100%02X00%02X%02X",
+        Dev_Prop[devNr].devAdr,
         zigHue,
         trans & 0xFF,
         trans >> 8
     );
-    
     // a valid command is 24013143010100030401000803010055000100
     //sprintf(command, "2401%02X%02X0101000304010008030100%s0000", id & 0xFF,(id >> 8) & 0xFF, zigHue );
     consoleOut("the color command = " + String(command));
@@ -140,21 +147,15 @@ void bulbSetSat(int devNr, int Sat, int trans)
     if (Sat > 100) Sat = 100;
     lampState[devChoice].sat = Sat;
     uint8_t zigSat = (uint8_t)((Sat * 254) / 100);
-    uint16_t id = (uint16_t)strtoul(Dev_Prop[devNr].devAdr, NULL, 16);
-    //                2401 3143   010100030401000703010A 7201 0A00 warm white
-        
-    // a valid command is 24013143010100030401000803010355000100
-   
+ 
     // Command 0x03 Move to Saturation
     sprintf(command,
-        "2401%02X%02X0101000304010007030103%02X%02X%02X",
-        id & 0xFF,
-        (id >> 8) & 0xFF,
+        "2401%s0101000304010007030103%02X%02X%02X",
+        Dev_Prop[devNr].devAdr,
         zigSat,
         trans & 0xFF,
         trans >> 8
     );
-
     consoleOut("the saturation command = " + String(command));
     lampState[devChoice].state = 5;
     saveLamp(devChoice, lampState[devChoice]);

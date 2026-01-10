@@ -158,3 +158,11 @@ void loadLamp(uint8_t index, lamps &lamp)
 
   prefs.end();
 }
+
+void initDevices() {
+    for(int x = 0; x < deviceCount; x++)
+    {
+      if(Dev_Prop[x].devType==4) switchOnOff(x, false, true);
+      if(Dev_Prop[x].devType==3) bulbOnOff(x, false, true);
+    }
+ } 

@@ -24,8 +24,14 @@ char * readFilteredFrame(char frameHex[], uint8_t whatOps)
             //Serial.println(frameHex);
             memcpy(comp, frameHex + 4, 4);
             comp[4] = '\0';
-            Serial.println("the comp value in frameHex is " + String(comp));
+            consoleOut("the comp value in frameHex is " + String(comp));
             
+            if (whatOps == 1 && strcmp(comp, "4481") == 0 )
+            {
+              consoleOut("→ found normal response");
+              success=true;
+              break;
+            }
             if (whatOps==5 && strcmp(comp, "45CA") == 0)
             {
               consoleOut("→ found join frame");
@@ -38,12 +44,7 @@ char * readFilteredFrame(char frameHex[], uint8_t whatOps)
               success=true;
               break;
             }
-            if (whatOps == 1 && strcmp(comp, "4481") == 0 )
-            {
-              consoleOut("→ found normal response");
-              success=true;
-              break;
-            }
+
       
       }
       empty_serial2(); // waste the excess bytes

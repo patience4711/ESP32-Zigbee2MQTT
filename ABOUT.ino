@@ -44,12 +44,12 @@ strcpy_P(page, ABOUT);
   strcat(page, temp);
   sprintf(temp, "<tr><td>wifi signalstrength<td>%lddB</td>", WiFi.RSSI());
   strcat(page, temp);
-    char mac[13];
-    getCoordinatorId(mac);        // fill the array
+    //char mac[13];
+    //getCoordinatorId(mac);        // fill the array
     sprintf(temp, "<tr><td>ESP CHIP ID<td>%s</td>", getChipId(true).c_str() );
     strcat(page, temp);
-    sprintf(temp, "<tr><td>CoordinatorId<td>%s</td>", mac );
-    strcat(page, temp);
+    //printf(temp, "<tr><td>CoordinatorId<td>%s</td>", mac );
+    //strcat(page, temp);
     sprintf(temp, "<tr><td>Free heap<td>%ld bytes</td>", esp_get_free_heap_size() );
     strcat(page, temp);
     if ( Mqtt_Format != 0 ) { //bool == y en er is een mqtt adres, ja kijk dan of er een sensor is ingesteld

@@ -53,6 +53,7 @@ const char BULB_CONTROL[] PROGMEM = R"=====(
 <div id='msect'>
 <div id='menu'>
 <a  href="/" class='close' >&times;</a>
+<a href=# id="goBack">devices</a>
 <a href="#" id="sub" style='background:green; display: none' onclick='submitFunction()'>save</a><br>
 </div>
 <kop>ESP32-Z2M CONTROL BULB <span id="NAME"></span></kop><br>
@@ -83,7 +84,7 @@ const char BULB_CONTROL[] PROGMEM = R"=====(
   </div>
 </div>
 <script defer>
-
+var myLink=document.getElementById("goBack");
 document.addEventListener("visibilitychange", function() {
     if (!document.hidden){
         console.log("Browser tab is visible")
@@ -136,6 +137,7 @@ function loadData() {
       var onoff = obj.onoff;
       var lampState = obj.state;
       var devnr = obj.devnr;
+      myLink.href = "/DEV?welke="+devnr;
       document.getElementById("NAME").textContent = devnr;
       if (onoff == 0) {
       document.getElementById("bt0").style.background="#b9b9c1";

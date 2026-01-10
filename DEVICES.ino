@@ -61,7 +61,7 @@ window.location.href='/MENU';
   <form id='formular' method='get' action='/DEV_DEL'></form>
   <div id='menu'>
     <div id='pairknop' style='display:%none'p% >
-    <a class='groen' href='/JOIN'  onclick="return confirm('Are you sure you want to join this device?')">join</a>
+    <a class='groen' href='/JOIN' onclick="return confirm('Are you sure you want to join this device?')">join</a>
     <a href='#' onclick='delFunction("/SW=BACK")'>delete</a>
     </div> 
     <a href='#' onclick='helpfunctie()'>help</a>
@@ -106,13 +106,12 @@ window.location.href='/MENU';
 // **********************************************************************************
 
 const char DEV_SCRIPT[] PROGMEM = R"=====(
-
+var myLink = 
 function delFunction(a) {
   if(confirm("are you sure to delete this device ?")) {  
   document.getElementById('formular').submit();   
   }
 }
-
 
 )====="; 
 
@@ -141,24 +140,20 @@ void handleDeviceconfig(AsyncWebServerRequest *request)
       
       //DebugPrintln("checked panels are : " + String(Inv_Prop[iKeuze].conPanels[0])+ String(Inv_Prop[iKeuze].conPanels[2])+ String(Inv_Prop[iKeuze].conPanels[2])+ String(Inv_Prop[iKeuze].conPanels[3]));
       //is this an addition?
-      String bestand = "/Dev_Prop" + String(devChoice) + ".str"; // /Inv_Prop0.str
-      consoleOut("going to write " + bestand ); 
-      //initial their both 0
-      esp_task_wdt_reset(); // otherwise a wdt reset can happen. Maybe do this via actionFlag?
-      writeStruct(bestand, devChoice); // alles opslaan in SPIFFS
+
+      actionFlag = 30 + devChoice; // this means save
       if(devChoice == deviceCount) 
       {
         deviceCount += 1;
         consoleOut("we appended a device, deviceCount now : " + String(deviceCount)); 
       }
       
-      //basisConfigsave();  // save inverterCount
       String toReturn = "/DEV?welke=" + String(devChoice);
       strcpy(requestUrl, toReturn.c_str() ); 
       consoleOut("requestUrl = " + String(requestUrl));
       consoleOut("\ndeviceCount after edit (saved) = " + String(deviceCount));  
-      consoleOut("list of the files we have after edit");
-      printDevices();
+      //consoleOut("list of the files we have after edit");
+      //printDevices();
       confirm();
       request->send(200, "text/html", toSend);
 }
@@ -173,7 +168,7 @@ void handleDevicedel(AsyncWebServerRequest *request, uint8_t welke)
   // read the serverargs and copy the values into the variables
     consoleOut("whichDevice = " + String(welke));
     consoleOut("deviceDel devChoice = " + String(devChoice));
-    actionFlag = 20 + devChoice;   
+    actionFlag = 20 + devChoice; // this means devicedelete   
     procesId = 3;
     String toReturn = "/DEV?welke=0";
     strcpy(requestUrl, toReturn.c_str() ); 
@@ -187,7 +182,7 @@ void printDevices() {
       //if we have 4 devices devCount = 4 and last device has devNr3 (0 1 2 3)
       for (int x=0; x < deviceCount+1; x++) 
       {
-      esp_task_wdt_reset();
+      yield();
       String bestand = "/Dev_Prop" + String(x) + ".str";
       
       if(SPIFFS.exists(bestand)) 
@@ -232,7 +227,7 @@ void remove_gaps() {
   // if this file not exixts we know that there must be a file "?inv_Prop inverterCount.str
   if( !SPIFFS.exists(bestand_1) ) {
       consoleOut("found a gap" + bestand_1);  
-      esp_task_wdt_reset();
+      yield();
       bestand_2 = "/Dev_Prop" + String(deviceCount) + ".str"; // the last file
       if( !SPIFFS.exists(bestand_2) ) consoleOut("error, " + bestand_2 + " not exists");  
    // if we rename the last file to the gap, it keeps the old content
@@ -386,7 +381,7 @@ void deviceDelete(uint8_t devNr)
    if(SPIFFS.exists(bestand) ) SPIFFS.remove(bestand);
    
    Serial.println("list of the files we have after removed one");
-   esp_task_wdt_reset();
+   yield();
    printDevices();
    // if we have 5 devices, devCount = 5 and the last device = 4
    // when we remove the last device we dont need to remove_gaps
@@ -399,9 +394,9 @@ void deviceDelete(uint8_t devNr)
        Serial.println("the device was not the last one, remove gaps");
        remove_gaps();
    }
-   esp_task_wdt_reset();
-   printDevices(); 
+
+   //printDevices(); 
     
    Serial.println("deviceCount after removal = " + String(deviceCount));
-   normalOps = 1; //restore zigbee reception
+   //normalOps = 1; //restore zigbee reception
 } 

@@ -82,9 +82,8 @@ void MQTT_Receive_Callback(char *topic, byte *payload, unsigned int length)
       consoleOut("there is no idx, abort");
       return;
     }
-    // so there is an idx, there should also be an nvalue
-    // if (!doc["devnr"].isNull()) dev = doc["devnr"].as<uint8_t>();
-    // if (!doc["onoff"].isNull()) onoff = doc["onoff"].as<uint8_t>();
+    // so there is an idx, there should also be an nvalue 1 0r 0
+
 
     if (!doc["nvalue"].isNull()) 
     {
@@ -105,7 +104,7 @@ void MQTT_Receive_Callback(char *topic, byte *payload, unsigned int length)
         if(Dev_Prop[dev].devType == 4) // smartsocket
         {
           consoleOut("mqtt switch " + String(dev));
-          switchSetOnOff(dev, nvalue, false);
+          switchOnOff(dev, nvalue, false);
           return;
         }
     } 

@@ -2,6 +2,7 @@
 #include <ArduinoJson.h>
 
 #include <ESPAsyncWebSrv.h>
+//#include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
 #include <AsyncEventSource.h>
 
@@ -13,7 +14,7 @@
 #include <Update.h>
 //#include <Hash.h>
 #include "PSACrypto.h"
-#define VERSION  "ESP32-ZIGBEE_v1_1"
+#define VERSION  "ESP32-ZIGBEE_v1_4"
 
 #include <TimeLib.h>
 #include <time.h>
@@ -27,12 +28,12 @@
 #include "SPIFFS.h"
 #include "FS.h"
 
-#include <ArduinoJson.h>
 //#include "AsyncJson.h"
 #include <Arduino.h>
 
 #include <Preferences.h>//#include <AsyncTCP.h>
 Preferences prefs;
+//
 //#include "Async_TCP.h" //we include the customized one
 
 //#include <ESPAsyncWebServer.h>
@@ -65,7 +66,7 @@ DNSServer dnsServer;
  * - more debug information in the console
  */
 //bool uartBusy = true;
-uint8_t normalOps = 0;
+uint8_t normalOps = 0; //means dicard all zigbee trafic
 
 typedef struct{
   char devName[20]   = "N/A";
@@ -221,7 +222,7 @@ int interviewFlag = 20;
 int mqttFlag = 0;
 unsigned long triggerTime = 0;  // when shouldDo was set true
 //const unsigned long delayDuration = 60000UL; // 60 seconds in ms
-//bool waitForJoin(); // predeclare
+bool joinAbort=false; // predeclare
 
 // *****************************************************************************
 // *                              SETUP
@@ -300,7 +301,12 @@ void setup() {
   healthCheck(); // check the state of the zigbee system
   if(zigbeeUp == 1) {
         Update_Log(2,"running");
+        normalOps = 1;
+        // at boot we put all devices off so that we will know their state
+        initDevices();
      }
+
+  
 
   //resetCounter = 0;
   //events.send( "reload", "message"); //getGeneral and getAll triggered
@@ -316,63 +322,6 @@ void setup() {
 //*****************************************************************************
 void loop() {
 
-
-
-// ***************************************************************************
-//                       day or night mode
-// ***************************************************************************
-#ifdef TEST
-// always daytime to be able to test
- dayTime = true;
-#endif
- 
-  //  if(now() > switchonTime && now() < switchoffTime) 
-  //   {
-  //         if(!dayTime)  
-  //         {
-  //            dayTime = true;
-  //            Update_Log(1, "woke up");
-  //            consoleOut("woke-up");
-  //            // reset the dayly energy at wakeup and send mqtt message
-  //            //resetValues(true, true);
-  //            //events.send( "reload", "message"); // refresh the data and state
-  //            eventSend(1);
-  //           }
-  //   } else {
-  //        if(dayTime) 
-  //        {
-  //           dayTime = false;
-  //           //String term= "nightmode";
-  //           Update_Log(1, "nightmode");
-  //           consoleOut("nightmode");
-  //           // clean memory
-  //           //memset( &inMessage, 0, sizeof(inMessage) ); //zero out the 
-  //           //delayMicroseconds(250);
-  //           // we send null messages for each inverter
-  //           //resetValues(false, true); // make all values zero exept energy and send mqtt
-  //           //events.send( "reload", "message"); // refresh the data and state
-  //           eventSend(0);
-  //           midnightFlag = 250; // triggers the reset values and mqtt null message at midnight
-            
-  //        }
-  //   }
-
-// ******************************************************************
-//              polling every 300 seconds
-// ******************************************************************
-#ifndef TEST
-//   unsigned long nu = millis();  // the time the program is running
-
-//    if (nu - laatsteMeting >= 1000UL * 300) // 300 sec
-//    {
-//      consoleOut("300 secs passed, polling" + String(millis()) ); //
-//         laatsteMeting += 1000UL * 300 ; // increases each time with (300/inverterCount * miliseconds);
-//         // if(dayTime && Polling) // we only poll at day and when Polling = true 
-//         //    { 
-//         //       ledblink(1,100);
-//         //       poll_all(); //if inverterCount = 9 than we have inverters 0-8
-//         //    } 
-//  }
 
 // ******************************************************************
 //              healthcheck every 10 minutes
@@ -396,7 +345,7 @@ void loop() {
           //ESP.restart();
           //DebugPrintln("date overflew, retrieve time");
   }
- #endif
+
 
   // Check if 1 minute has passed since shouldDo was set true
   if (mqttFlag != 0 && millis() - triggerTime >= 1000UL * 60) {

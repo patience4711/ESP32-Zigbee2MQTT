@@ -53,7 +53,7 @@ void startCoordinator()
     //uartBusy = true;
     //char messageToDecode[100] = {0};
     // dont bother about znormalOps, zigbee incoming is discarted
-    Serial.println("init zb coordinator");
+    consoleOut("init zb coordinator");
     char s_d[100]={0}; // provide a buffer for the call to readZB
     zigbeeUp = 11; //initial it is initializing 11, 0=down 1=up
     yield();
@@ -75,7 +75,7 @@ void startCoordinator()
 
     zigbeeUp = 0;
     
-    if(checkCoordinator() == 0)
+    if(checkCoordinator() == true)
     {
         consoleOut("Coordinator started successfully");
         zigbeeUp = 1;
@@ -90,8 +90,8 @@ void startCoordinator()
 
 void writeCoordinatorConfig()
 {
-Serial.println(F("\n\nwrite settings to cc25xx"));
-char mes[50];
+consoleOut("\n\nwrite settings to cc25xx");
+char mes[128];
         //ZB_WRITE_CONFIGURATION (0x2604)
         // we start with a hard reset of the zb module
         ZBhardReset();
@@ -124,7 +124,7 @@ char mes[50];
         empty_serial2();
         //decodeGeneralAnswer(); 
 
-                  // 260587005A6967626565416C6C69616E63653039
+        // 260587005A6967626565416C6C69616E63653039
         strcpy(mes, "260562105A6967426565416C6C69616E63653039"); // ZCD_NV_PRECFGKEY set preconfigured key ZigbeeAlliance09
         consoleOut("set preconfigured key = " + String(mes)); // ok 
         sendZB(mes);

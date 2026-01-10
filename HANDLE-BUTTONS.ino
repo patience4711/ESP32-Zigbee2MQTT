@@ -30,7 +30,7 @@ void handleButtons(AsyncWebServerRequest *request)
             break;
           case 11:
             //on/off button on switch control
-                if(Dev_Prop[devChoice].values[0] == 1) switchSetOnOff(devChoice, false, true); else switchSetOnOff(devChoice, true, true);
+                if(Dev_Prop[devChoice].values[0] == 1) switchOnOff(devChoice, false, true); else switchOnOff(devChoice, true, true);
             break;                                               
        }
    eventSend(0);

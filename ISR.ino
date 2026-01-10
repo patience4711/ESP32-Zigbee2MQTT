@@ -15,7 +15,7 @@
 // next we check if the button was short or long pressed.
 
  IRAM_ATTR void isr() {
- actionFlag = 15;
+ //actionFlag = 15;
  }
 
 void buttonPressed() {
