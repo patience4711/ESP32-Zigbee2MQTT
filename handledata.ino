@@ -1,8 +1,8 @@
 void handleDataRequests(AsyncWebServerRequest *request) 
 
 {
-      consoleOut("handleDataRequest");
-      Serial.println("handleDataRequest the request is " + String(requestUrl));
+      //consoleOut("handleDataRequest");
+      consoleOut("handleDataRequest the request is " + String(requestUrl));
       if( request->hasArg("devnr") )
         {
         // consoleOut("found POWER");  

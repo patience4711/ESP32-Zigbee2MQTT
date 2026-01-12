@@ -5,18 +5,16 @@ void SPIFFS_read() {
   //DebugPrintln("mounting FS...");
  if (SPIFFS.begin(true)) {
     Serial.println("mounted file system");
-
-       if( file_open_for_read("/wificonfig.json") ) {
-                Serial.println("read wificonfig\n");
-          } else {
-             Serial.println("wificonfig.json not opened\n");
-          }
-       
        if( file_open_for_read("/basisconfig.json") ) {     
              Serial.println("read basisconfig\n");
           } else {
           Serial.println("basisconfig.json not opened\n");
         } 
+       if( file_open_for_read("/wificonfig.json") ) {
+                Serial.println("read wificonfig\n");
+          } else {
+             Serial.println("wificonfig.json not opened\n");
+          }
        if( file_open_for_read("/mqttconfig.json") ) {     
              Serial.println("mqttconfig read");
           } else {
@@ -94,11 +92,12 @@ void wifiConfigsave() {
       Serial.println("open file for writing failed!");
     }
     //DebugPrintln("wificonfig.json written");
-    #ifdef DEBUG 
-//    json.printTo(Serial);
+    //json.printTo(Serial);
+    if(diagNose != 0)
+    {
     serializeJson(json, Serial);
     Serial.println(F("")); 
-    #endif
+    }
     serializeJson(json, configFile);
     configFile.close();
 }
@@ -118,11 +117,12 @@ void basisConfigsave() {
     if (!configFile) {
       //DebugPrintln("open file for writing failed");
     }
-    Serial.println("inverterconfig.json written");
-    #ifdef DEBUG 
+    Serial.println("basisconfig.json written");
+    if (diagNose != 0)
+    { 
     serializeJson(json, Serial);
     Serial.println(F(""));     
-    #endif
+    }
     serializeJson(json, configFile);
     configFile.close();
 }
@@ -147,10 +147,11 @@ void mqttConfigsave() {
       //DebugPrintln("open file for writing failed");
     }
     Serial.println("mqttconfig.json written");
-    #ifdef DEBUG
+    if(diagNose != 0)
+    {
     serializeJson(json, Serial);
     Serial.println(F("")); 
-    #endif
+    }
     serializeJson(json, configFile);
     configFile.close();
 }
@@ -181,55 +182,39 @@ bool file_open_for_read(const char* bestand)
         Serial.println(bestand);
         // Continue with empty doc -> all fallbacks will be used
     }
-            // we read the file even if it doesn't exist, so that variables are initialized
-            // we read every variable with a fall back value to prevent crashes
+    // we read the file even if it doesn't exist, so that variables are initialized
+    // we read every variable with a fall back value to prevent crashes
 
-            //serializeJson(doc, jsonStr);
-            if (strcmp(bestand, "/wificonfig.json") == 0) {
-                      //strcpy(static_ip, doc["ip"] | "000.000.000.000");
-                      strcpy(pswd, doc["pswd"] | "0000");
-                      longi = doc["longi"] | 5.432;
-                      lati = doc["lati"] | 51.743;                      
-                      strcpy(gmtOffset, doc["gmtOffset"] | "+120");
-                      zomerTijd = doc["zomerTijd"].as<bool>() | true;
-                      securityLevel = doc["securityLevel"].as<int>() | 6;
-            }
+    //serializeJson(doc, jsonStr);
+    if (strcmp(bestand, "/wificonfig.json") == 0) {
+              //strcpy(static_ip, doc["ip"] | "000.000.000.000");
+              strcpy(pswd, doc["pswd"] | "0000");
+              longi = doc["longi"] | 5.432;
+              lati = doc["lati"] | 51.743;                      
+              strcpy(gmtOffset, doc["gmtOffset"] | "+120");
+              zomerTijd = doc["zomerTijd"].as<bool>() | true;
+              securityLevel = doc["securityLevel"].as<int>() | 6;
+    }
 
-            if ( strcmp(bestand, "/basisconfig.json") == 0) {
-                    strcpy (PAN_ID, doc["PAN_ID"] | "D8A3");
-                    strcpy (userPwd, doc["userPwd"] | "1111" );
-                    diagNose = doc["diagNose"].as<int>() | 0;
-                    //Polling = doc["Polling"].as<bool>() | false;
-              }            
+    if ( strcmp(bestand, "/basisconfig.json") == 0) {
+            strcpy (PAN_ID, doc["PAN_ID"] | "D8A3");
+            strcpy (userPwd, doc["userPwd"] | "1111" );
+            diagNose = doc["diagNose"].as<int>() | 2; // default is serial
+            //Polling = doc["Polling"].as<bool>() | false;
+      }            
 
-            if ( strcmp(bestand, "/mqttconfig.json") == 0) {
-                     strcpy(Mqtt_Broker,   doc["Mqtt_Broker"]   | "192.168.0.100");
-                     strcpy(Mqtt_Port,     doc["Mqtt_Port"]     | "1883");  
-                     strcpy(Mqtt_outTopic, doc["Mqtt_outTopic"] | "domoticz/in"); 
-                     strcpy(Mqtt_inTopic,  doc["Mqtt_inTopic"]  | "domoticz/out");        
-                     strcpy(Mqtt_Username, doc["Mqtt_Username"] | "n/a");
-                     strcpy(Mqtt_Password, doc["Mqtt_Password"] | "n/a");
-                     Mqtt_Format = doc["Mqtt_Format"].as<int>() | 0;
-                     //Mqtt_stateIDX = doc["Mqtt_stateIDX"].as<int>() | 123;      
-            }
-             return true;
+    if ( strcmp(bestand, "/mqttconfig.json") == 0) {
+              strcpy(Mqtt_Broker,   doc["Mqtt_Broker"]   | "192.168.0.100");
+              strcpy(Mqtt_Port,     doc["Mqtt_Port"]     | "1883");  
+              strcpy(Mqtt_outTopic, doc["Mqtt_outTopic"] | "domoticz/in"); 
+              strcpy(Mqtt_inTopic,  doc["Mqtt_inTopic"]  | "domoticz/out");        
+              strcpy(Mqtt_Username, doc["Mqtt_Username"] | "n/a");
+              strcpy(Mqtt_Password, doc["Mqtt_Password"] | "n/a");
+              Mqtt_Format = doc["Mqtt_Format"].as<int>() | 0;
+              //Mqtt_stateIDX = doc["Mqtt_stateIDX"].as<int>() | 123;      
+    }
+      return true;
 } 
-// void printStruct( String bestand ) {
-// //input String bestand = "/Inv_Prop" + String(x) + ".str";
-//       //String bestand = bestand + String(i) + ".str"
-//       //leesStruct(bestand); is done at boottime
-//       int ivn = bestand.substring(9,10).toInt();
-//       consoleOut("Inv_Prop[" + String(ivn) + "].invLocation = " + String(Inv_Prop[ivn].invLocation));     
-//       consoleOut("Inv_Prop[" + String(ivn) + "].invSerial = " + String(Inv_Prop[ivn].invSerial));
-//       consoleOut("Inv_Prop[" + String(ivn) + "].invID = " + String(Inv_Prop[ivn].invID)); 
-//       consoleOut("Inv_Prop[" + String(ivn) + "].invType = " + String(Inv_Prop[ivn].invType));
-//       consoleOut("Inv_Prop[" + String(ivn) + "].invIdx = " + String(Inv_Prop[ivn].invIdx));
-//       consoleOut("Inv_Prop[" + String(ivn) + "].calib = " + String(Inv_Prop[ivn].calib));
-//       consoleOut("Inv_Prop[" + String(ivn) + "].conPanels = " + String(Inv_Prop[ivn].conPanels[0])  + String(Inv_Prop[ivn].conPanels[1]) + String(Inv_Prop[ivn].conPanels[2]) + String(Inv_Prop[ivn].conPanels[3]));      
-//       //Serial.println("Inv_Prop[" + String(ivn) + "].throttled = " + String(Inv_Prop[ivn].throttled));
-//       //Serial.println("Inv_Prop[" + String(ivn) + "].maxPower = " + String(Inv_Prop[ivn].maxPower));
-//       consoleOut("");
-//       consoleOut("****************************************");
-// }
+
 
 

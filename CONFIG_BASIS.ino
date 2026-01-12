@@ -13,12 +13,10 @@ const char BASISCONFIG[] PROGMEM = R"=====(
   <center><table>
   <tr><td style='width:140px;'>pan id<td><input class='inp6' name='panid' value='{id}' minlength='12' maxlength='12' required></input><td></tr>
   <tr><td>user passwd<td><input  class='inp5' name='pw1' length='11' placeholder='max. 10 char' value='{pw1}' pattern='.{4,10}' title='between 4 en 10 characters'></input> 
-  <tr><td>serial debug:<td><input type='checkbox' style='width:30px; height:30px;' name='debug' #check1></input></tr>
-
-  </td></tr>
-   
+  <tr><td>serial debug:<td><input type='checkbox' style='width:30px; height:30px;' name='deBug' #checkA></tr>
+  
   </td></tr></table></form>
-  </table>
+
   </div><br>
 </div>
 </body></html>
@@ -33,8 +31,9 @@ void zendPageBasis(AsyncWebServerRequest *request) {
     // replace data
     webPage.replace("'{id}'" , "'" + String(PAN_ID) + "'") ;
     webPage.replace( "'{pw1}'" , "'" + String(userPwd) + "'") ;
+     Serial.println("diagNose = " + String(diagNose));
      if (diagNose != 0) { 
-      webPage.replace("#check1", "checked");
+      webPage.replace("#checkA", "checked");
     } 
     request->send(200, "text/html", webPage);
     webPage=""; // free up

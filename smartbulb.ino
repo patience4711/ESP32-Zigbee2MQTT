@@ -24,6 +24,19 @@ incoming mqtt from a smart bulb
 there is an idx 946
 unknown device
 
+pairing log 
+extracted frame: FE0C45CA59C49BDEB1CC8C38C1A400
+the comp value in frameHex is 45CA
+â†’ found join frame
+Device announce received (45CA)
+New device joined: short=59C4 ieee=9BDEB1CC8C38C1A4
+success, device got Address 59C4
+saving the file /Dev_Prop0.str
+sendZB FE04260836FFFC001F
+Permit join disabled
+
+length log: 838
+
 */
 
 void bulbOnOff(int devNr, bool onoff, bool mosQ) 

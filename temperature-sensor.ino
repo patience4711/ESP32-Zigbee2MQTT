@@ -15,5 +15,17 @@ readZB FE016608006F rc=6
 
 when it stopped working i did a register endpoint 2400010401000001010402010000
 
+extracted frame: FE016608
+the comp value in frameHex is 6608
+extracted frame: FE0C45CAA766846523BD7238C1A400
+the comp value in frameHex is 45CA
+â†’ found join frame
+Device announce received (45CA)
+New device joined: short=A766 ieee=846523BD7238C1A4
+success, device got Address A766
+saving the file /Dev_Prop0.str
+sendZB FE04260836FFFC001F
+Permit join disabled
 
+length log: 534
 */

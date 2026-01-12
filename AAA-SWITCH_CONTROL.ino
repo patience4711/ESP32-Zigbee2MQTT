@@ -133,8 +133,9 @@ void switchOnOff(int devNr, bool onoff, bool mosQ)
 {
     char command[50];
     char toMQTT[100];
-     
-                // mqttConnect() checks first if we are connected, if not we connect anyway
+     // when we send a command, the address should be reversed
+    
+                    // mqttConnect() checks first if we are connected, if not we connect anyway
 
     //working on command  2401CB06010106000401000E03010100
     //off                 2401CB06010106000401000E03010000
@@ -142,7 +143,7 @@ void switchOnOff(int devNr, bool onoff, bool mosQ)
     //uint16_t id = (uint16_t)strtoul(Dev_Prop[devNr].devAdr, NULL, 16);
     sprintf(command,
         "2401%s010106000401000E0301%s00",
-        Dev_Prop[devNr].devAdr,
+         Dev_Prop[devNr].devAdr,
         onoff ? "01" : "00");
     consoleOut("the on/off command = " + String(command));
     if(onoff) Dev_Prop [devNr].values[0] = 1; else Dev_Prop [devNr].values[0] = 0;

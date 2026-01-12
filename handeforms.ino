@@ -12,7 +12,7 @@ void handleForms(AsyncWebServerRequest *request)
          //pollOffset = request->arg("offs").toInt();  
   
          //BEWARE CHECKBOX
-         if(request->hasParam("debug")) diagNose = 2;  else diagNose = 0;
+         if(request->hasParam("deBug")) diagNose = 2;  else diagNose = 0;
          basisConfigsave();  // alles opslaan
          return; 
      } else 

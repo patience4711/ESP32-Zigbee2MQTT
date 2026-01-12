@@ -29,7 +29,7 @@ char * readZB( char inMess[] ) {
             {
                 if(Serial2.peek() == 0xFE && readCounter > 70) {
                   consoleOut("peeked FE, stop reading");
-                  inMess[readCounter +1] = '\0';
+                  inMess[readCounter + 1] = '\0';
                   empty_serial2(); // waste the rest
                   break;
                 }

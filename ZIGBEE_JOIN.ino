@@ -6,7 +6,7 @@ void joinOnActionflag()
    //we want the joining process logged in a file so diagNose = 3
    char term[20];
    debugLog="";
-   diagNose = 1;
+   diagNose = 3; // we write the pairing to a log
    consoleOut("trying join inv " + String(devChoice));
    bool shouldSave = false;
    if( zigbeeUp != 1) {
@@ -35,6 +35,7 @@ void joinOnActionflag()
        // Update_Log(4, "failed");
        consoleOut("joining failed");
     }
+    
     if(shouldSave)
     {
         String bestand = "/Dev_Prop" + String(dev2Join) + ".str"; 
@@ -43,6 +44,7 @@ void joinOnActionflag()
     }
     disableJoin();
     normalOps = 1;
+    diagNose=2;
 }
 
 void handleJoin(AsyncWebServerRequest *request) {
@@ -95,26 +97,13 @@ bool waitJoin()
         {
              
              if(strcmp(comp, "45CA") == 0) consoleOut("Device announce received (45CA)"); else consoleOut("Device announce received (4606)");
-                // Short address (little endian)
-                //memcpy(shortAddress, toDecode + 8, 4); shortAddress[4]='\0';
-                //memcpy(ieeeAddress, toDecode + 12, 16); ieeeAddress[16]='\0';
-                // copy directly to the Dev_Prop
-               // char devAdr[5];   // 4 hex chars + null terminator
-               // devAdr[0] = toDecode[8 + 2];
-               // devAdr[1] = toDecode[8 + 3];
-               // devAdr[2] = toDecode[8 + 0];
-               // devAdr[3] = toDecode[8 + 1];
-               // devAdr[4] = '\0';
-               // if we reverse this the control goes wrong
-               //copy devAdr
-               // char *dst = Dev_Prop[dev2Join].devAdr;
-               // dst[0] = toDecode[10];  // E
-               // dst[1] = toDecode[11];  // 9
-               // dst[2] = toDecode[8];   // 8
-               // dst[3] = toDecode[9];   // 7
-               // dst[4] = '\0';
                
+                // FE0C 45CA 3143 7C826D8FAB38C1A4  00001B
                 memcpy(Dev_Prop[dev2Join].devAdr, toDecode + 8, 4); Dev_Prop[dev2Join].devAdr[4]='\0';
+                // save this message as is because when something is coming in, the address is containe in the message
+                // so we can recognise it easely
+                // When we send messages however, the command has te be reversed. this causes extra handling
+               
                 
                 memcpy(Dev_Prop[dev2Join].devIeee, toDecode + 12, 16); Dev_Prop[dev2Join].devIeee[16]='\0';
                       

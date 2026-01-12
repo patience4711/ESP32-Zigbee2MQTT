@@ -25,9 +25,27 @@ void processNormal()
 
     consoleOut("deviceCount = " + String(deviceCount));
       //the first thing we need to find out is for which device the message is
+    // the frame is somthing like this 
+    // FE1B448100000600EEC101010086007E8757000007182A0A00001000EEC1
+    // here the addressvalue = at offset 16
+    // can we use extract value iow is the address always there
+    // in devAddr this should be the same as in this message
+    // the short Address in the message is always at th same place after 448100000600
+       char comp[5]={0};
+       //comp[0] = messageToDecode[8];  // 'E'
+       //comp[1] = messageToDecode[8];  // 'E'
+       //comp[2] = messageToDecode[10];   // 'C'
+       //comp[3] = messageToDecode[11];   // '1'
+       //comp[4] = '\0';
+       //FE1B448100000600EEC10101007E00EB42CC00000718A40A00001001EEC
+       memcpy(comp, &messageToDecode[16], 4);
+       comp[4] = '\0';
+       consoleOut("the value for devicelookup = " + String(comp));
+       // no we have the address to compare with the device files to find which device we are dealing with
     for(int x=0; x < deviceCount; x++)
     {
-      if (strstr(messageToDecode, Dev_Prop[x].devAdr) != NULL) {
+      if (strcmp(comp, Dev_Prop[x].devAdr) == 0)
+      {
           deviceNr = x ;
           consoleOut("Found device # " + String(x));
           idx=Dev_Prop[x].devIdx;
@@ -36,7 +54,17 @@ void processNormal()
           consoleOut("the device idx = " + String(idx));
           break;
       }
-    }
+    } 
+      // if (strstr(messageToDecode, Dev_Prop[x].devAdr) != NULL) {
+      //     deviceNr = x ;
+      //     consoleOut("Found device # " + String(x));
+      //     idx=Dev_Prop[x].devIdx;
+      //     deviceType = Dev_Prop[x].devType;
+      //     consoleOut("the device type = " + String(deviceType));
+      //     consoleOut("the device idx = " + String(idx));
+      //     break;
+      // }
+    //}
     if( deviceNr == -1 ) {
         consoleOut("unknown device");
         return;

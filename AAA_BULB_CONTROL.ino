@@ -47,6 +47,12 @@ const char BULB_CONTROL[] PROGMEM = R"=====(
     font-size: 12px;
     color: black;
   }
+
+@media only screen and (max-width: 800px) { 
+.bt {width: 80px; font-size: 12px;}
+}
+
+
 </style> 
 </head>
 <body onload='loadScript()'>
@@ -57,13 +63,14 @@ const char BULB_CONTROL[] PROGMEM = R"=====(
 <a href="#" id="sub" style='background:green; display: none' onclick='submitFunction()'>save</a><br>
 </div>
 <kop>ESP32-Z2M CONTROL BULB <span id="NAME"></span></kop><br>
-<div class='divstijl' font-size:20px;' id='maindiv' style='height:72vh; width: 480px;'>
+<div class='divstijl' font-size:20px;' id='maindiv' style='height:72vh;'>
 <center>  
 <b id="pwdby">powered by Hansiart</b><br>
+<br>
 <table>
-  <tr><td width='30'><button id='bt0' onclick='buttonFunction(0)' class='bt red'>OFF</button></td>
-  <td width='30'><button id='bt1' onclick='buttonFunction(1)' class='bt red'>WARM</button></td>
-  <td width='30'><button id='bt2' onclick='buttonFunction(2)' class='bt red'>NEUTRAL</button></td>  
+  <tr><td><button id='bt0' onclick='buttonFunction(0)' class='bt red'>OFF</button></td>
+  <td><button id='bt1' onclick='buttonFunction(1)' class='bt red'>WARM</button></td>
+  <td><button id='bt2' onclick='buttonFunction(2)' class='bt red'>NEUTRAL</button></td>  
   <tr><td><button id='bt3' onclick='buttonFunction(3)' class='bt red'>COOL</button></td>
   <td><button id='bt4' onclick='buttonFunction(4)' class='bt red'>COLOR</button></td>
   <td><button id='bt5' onclick='buttonFunction(5)' class='bt red'>PRESET</button></td>

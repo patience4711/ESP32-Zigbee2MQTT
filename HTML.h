@@ -135,7 +135,7 @@ const char WAIT_JOIN[] PROGMEM = R"=====(
 <br><br><br><a href="/readJoinLog">read Joinlog</a></h3></div>
 <div id="hiddenFail" style="display:none"<br><br><br>
 <h3>The joining failed.
-<br><br><br><a href="/readJoinLog">read Joinlog</a></h3></div>
+<br><br><br><a href="/readDebug">read Debuglog</a></h3></div>
 
 <div id="hiddenReturn" style="display:none"><br><h3><a href="/DEV_CONFIG">close</a></h3></div>
 
@@ -160,7 +160,7 @@ function getData() {
       var obj = JSON.parse(antwoord);
       var devAdr = obj.devAdr;
       var devNr = obj.dev2Join;
-      myLink.href ="/DEV?cancel="+devNr;
+      myLink.href ="/CANCEL?devic="+devNr;
       if( devAdr != "1111" ) {
           if( devAdr == "0000" ) {
             document.getElementById("marq").style.display = "none";

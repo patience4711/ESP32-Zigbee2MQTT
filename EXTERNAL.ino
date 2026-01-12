@@ -203,12 +203,13 @@ void handleNotFound(AsyncWebServerRequest *request)
           return;
       } else
     
-         if ( serverUrl.indexOf("readJoinLog") > -1) {
-          debugLog += "\nlength log: " + String(debugLog.length());
-          request->send(200, "text/html", "<pre>" + debugLog + "</pre>");
-          //debugLog="";
-          return;
-      } else 
+        //  if ( serverUrl.indexOf("readJoinLog") > -1) {
+        //   debugLog += "\nlength log: " + String(debugLog.length());
+        //   request->send(200, "text/html", "<pre>" + debugLog + "</pre>");
+        //   diagNose = 1;
+        //   debugLog="";
+        //   return;
+     //} else 
       if ( serverUrl.indexOf("readDebug") > -1) {
           debugLog += "\nlength log: " + String(debugLog.length());
           request->send(200, "text/html", "<pre>" + debugLog + "</pre>");

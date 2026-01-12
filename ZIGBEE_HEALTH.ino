@@ -22,7 +22,7 @@ void healthCheck() {
     if(checkCoordinator() ) // send the 2700 command 
     {
         zigbeeUp = 1; // all oke
-        diagNose = 0; // reset diagNose as this costs cpu
+        //diagNose = 0; // reset diagNose as this costs cpu
         //normalOps = 1; // normal working process
     } else {
         consoleOut("zb down");

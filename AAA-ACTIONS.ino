@@ -1,5 +1,6 @@
 // these are operations that are triggered within an async webserver request. 
-// a crash or wdt reset can happen otherwise
+// a crash or wdt reset can happen when these actions take too long 
+// or there are delays in the routines. asyncwebserver forbids that.
 
 void test_actionFlag() {
     if(actionFlag == 0) return;
@@ -10,35 +11,35 @@ void test_actionFlag() {
     // ******************  reset the nework data and reboot in AP *************************
     if (actionFlag == 11 || value == 11) 
     { // 
-     //DebugPrintln("erasing the wifi credentials, value = " + String(value) + "  actionFlag = " + String(actionFlag));
-     delay(1000); //reserve time to release the button
-     //eraseWifiFlash();
-     WiFi.disconnect();
-//    WiFi.end();
-     // we write a flag in EEPROM
-     consoleOut(F("wifi disconnected"));
-//we try to overwrite the wifi creentials     
-     const char* ssid = "dummy";
-    const char* password = "dummy";
-    WiFi.begin(ssid, password);
-    Serial.println(F("\nConnecting to dummy network"));
-    int teller = 0;
-      while(WiFi.status() != WL_CONNECTED){
-          Serial.print(F("wipe wifi credentials\n"));
-          delay(100);         
-          teller ++;
-          if (teller > 2) break;
-      }
-     ESP.restart();
+            //DebugPrintln("erasing the wifi credentials, value = " + String(value) + "  actionFlag = " + String(actionFlag));
+            delay(1000); //reserve time to release the button
+            //eraseWifiFlash();
+            WiFi.disconnect();
+            consoleOut(F("wifi disconnected"));
+            //we try to overwrite the wifi creentials     
+            const char* ssid = "dummy";
+            const char* password = "dummy";
+            WiFi.begin(ssid, password);
+            Serial.println(F("\nConnecting to dummy network"));
+            int teller = 0;
+            while(WiFi.status() != WL_CONNECTED)
+            {
+                Serial.print(F("wipe wifi credentials\n"));
+                delay(100);         
+                teller ++;
+                if (teller > 2) break;
+            }
+            ESP.restart();
     }  
 
-    if (actionFlag == 10) { // the button was pressed a long time, start ap
-     delay(2000); // give the server the time to send the confirm
-     consoleOut("rebooting");
-     String key = "req";
-     prefs.putString(key.c_str(), requestUrl);
-     ESP.restart();
-  }
+    if (actionFlag == 10) 
+    { // the button was pressed a long time, start ap
+            delay(2000); // give the server the time to send the confirm
+            consoleOut("rebooting");
+            String key = "req";
+            prefs.putString(key.c_str(), requestUrl);
+            ESP.restart();
+    }
     
 if (actionFlag >= 20 && actionFlag < 30) 
         { //triggered by devicedel
@@ -71,7 +72,7 @@ if (actionFlag >= 30 && actionFlag < 40)
 //         cont_read(); // 
 //         if(diagNose == 3) diagNose = 1;
 //     }
-    if (actionFlag == 44) { //triggered by the webpage zbtest
+    if (actionFlag == 44) { //healthcheck triggered by the webpage zbtest
         actionFlag = 0; //reset the actionflag
         healthCheck(); 
     }
@@ -81,14 +82,9 @@ if (actionFlag >= 30 && actionFlag < 40)
         consoleOut("TEST actionFlag = 45 ");
         testMessage(); // the bool decides where to find the input
         if(diagNose == 3) diagNose = 1;
+        return;
     }
-    // if (actionFlag == 43) { //triggered by the api (external)
-    //     actionFlag = 0; //reset the actionflag
-    //     if(diagNose == 10) diagNose = 3;
-    //     consoleOut("\nTEST actionFlag = 43 ");
-    //     rawMessage(); // the bool decides where to find the input
-    //     if(diagNose == 3) diagNose = 1;
-    // }
+
     if (actionFlag == 46) { //triggered by the webpage zbtest
         actionFlag = 0; //reset the actionflag
         showDir(); 
@@ -102,44 +98,7 @@ if (actionFlag >= 30 && actionFlag < 40)
         if(diagNose == 3) diagNose = 1;
     }
 
-    //    if (actionFlag == 55) { //triggered by bulb on to test tke bulb
-    //    actionFlag = 0;
-    //     consoleOut("bulbColorTemp(2, 1)");
-    //     bulbColorTemp(2, 1);
-    //     delay(2000);
-    //     consoleOut("bulbColorTemp(2, 2)");
-    //     bulbColorTemp(2, 2);
-    //     delay(2000);
-    //     consoleOut("bulbColorTemp(2, 3)");
-    //     bulbColorTemp(2, 3);
-    //     delay(2000);
-    //     consoleOut("bulbSetHue(2, 00, 1) red"); //red
-    //     bulbSetHue(2, 00, 0);  // red
-    //     delay(2000) ;
-    //     consoleOut("bulbSetHue(2, 85, 1) green"); // green
-    //     bulbSetHue(2, 135, 0);
-    //     delay(2000);
-    //     consoleOut("bulbSetHue(2, 170, 10) blue"); // blue
-    //     bulbSetHue(2, 700, 10);
-    //     delay(2000);
-    //     consoleOut("bulbSetSat(2, 10, 5)");
-    //     bulbSetSat(2, 10, 5 );
-    //     delay(2000);
-    //     consoleOut("bulbSetSat(2, 90, 3)");
-    //     bulbSetSat(2, 90, 3);
-    //     delay(2000);
-        
-    //     bulbOnOff(2,false);              
-    // }
-
-       //if (actionFlag == 48) { //triggered by the api (external)
-       // actionFlag = 0; //reset the actionflag
-       //if(diagNose == 10) diagNose = 3;
-        //consoleOut("TEST actionFlag = 47 ");
-        //joinDevice(); // t
-        //if(diagNose == 3) diagNose = 1;
-        //}
-       
+      
     
         if (actionFlag == 60) {
             actionFlag = 0; //reset the actionflag
