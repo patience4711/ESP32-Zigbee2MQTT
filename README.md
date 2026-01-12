@@ -4,8 +4,9 @@ Works with an ESP32 + CC2530 Zigbee module to control smart bulbs, sensors, swit
 ## features
 - Zigbee coordinator on **ESP32**
 - Integrates with **MQTT** brokers
-- Supports motion sensors, temperature sensors, smart bulbs, smart sockets
+- Supports motion sensors, temperature sensors, smart bulbs, smart sockets (and more)
 - Web UI for joining and controlling devices
+- Just one device to control many
 
 Everything is done via a webinterface. Below is an example of the frontpage, showing joined devices.<br>
 ![front_6_1](https://github.com/user-attachments/assets/e92021f0-b7fd-49e9-bea4-a19ee2662a60)
